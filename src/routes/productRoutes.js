@@ -7,12 +7,13 @@ import {
   deleteProduct,
 } from '../controllers/productController.js';
 
-const router = express.Router();
+const productRoute = express.Router();
 
-router.post('/product', createProduct);
-router.get('/products', getAllProducts);
-router.get('/product/:id', getProductById);
-router.put('/product/:id', updateProduct);
-router.delete('/product/:id', deleteProduct);
+// Routes pour gérer les produits
+productRoute.post('/product', createProduct);
+productRoute.get('/products', getAllProducts);
+productRoute.get('/product/:id', getProductById);
+productRoute.put('/product/:id', updateProduct);
+productRoute.delete('/product/:id', deleteProduct);
 
 export default productRoute;

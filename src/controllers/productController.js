@@ -1,110 +1,111 @@
 import prisma from "../config/prisma.js";
 
 export const createProduct = async (req, res) => {
-  const { name, description, stock, salePrice, purchasePrice, threshold, requiresPrescription } = req.body;
+  const { name, description, stock, sale_price, purchase_price, threshold, prescription_req } = req.body;
 
   try {
-    const product = await prisma.product.create({
+    const newProduct = await prisma.products.create({
       data: {
         name,
         description,
         stock,
-        salePrice,
-        purchasePrice,
+        sale_price,
+        purchase_price,
         threshold,
-        requiresPrescription,
+        prescription_req,
       },
     });
 
-    res.status(201).json(product);
+    res.status(201).json(newProduct); 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error while creating product' });
+    console.error("Error creating product:", error);
+    res.status(500).json({ error: 'Error while creating the product.' });
   }
 };
 
+
 export const getAllProducts = async (req, res) => {
-    try {
-      const products = await prisma.product.findMany();
-      res.status(200).json(products);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Error while retrieving products' });
-    }
-  };
+  try {
+    const products = await prisma.products.findMany();
+    res.status(200).json(products);
+  } catch (error) {
+    console.error('Error retrieving products:', error);
+    res.status(500).json({ error: 'Error while retrieving products' });
+  }
+};
 
-  export const getProductById = async (req, res) => {
-    const { id } = req.params;
-  
-    try {
-      const product = await prisma.product.findUnique({
-        where: { id: parseInt(id) },
-      });
-  
-      if (!product) {
-        return res.status(404).json({ message: 'Product not found' });
-      }
-  
-      res.status(200).json(product);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Error while retrieving the product' });
-    }
-  };
+export const getProductById = async (req, res) => {
+  const { id } = req.params;
 
-  export const updateProduct = async (req, res) => {
-    const { id } = req.params;
-    const { name, description, stock, salePrice, purchasePrice, threshold, requiresPrescription } = req.body;
-  
-    try {
-      const existingProduct = await prisma.product.findUnique({
-        where: { id: parseInt(id) },
-      });
-  
-      if (!existingProduct) {
-        return res.status(404).json({ error: 'Product not found' });
-      }
-  
-      const updatedProduct = await prisma.product.update({
-        where: { id: parseInt(id) },
-        data: {
-          name,
-          description,
-          stock,
-          salePrice,
-          purchasePrice,
-          threshold,
-          requiresPrescription,
-        },
-      });
-  
-      res.status(200).json(updatedProduct);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Error while updating the product' });
-    }
-  };
+  try {
+    const product = await prisma.products.findUnique({
+      where: { id: parseInt(id) },
+    });
 
-  export const deleteProduct = async (req, res) => {
-    const { id } = req.params;
-  
-    try {
-      const existingProduct = await prisma.product.findUnique({
-        where: { id: parseInt(id) },
-      });
-  
-      if (!existingProduct) {
-        return res.status(404).json({ error: 'Product not found' });
-      }
-  
-      await prisma.product.delete({
-        where: { id: parseInt(id) },
-      });
-  
-      res.status(200).json({ message: 'Product successfully deleted' });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Error while deleting the product' });
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
     }
-  };
+
+    res.status(200).json(product);
+  } catch (error) {
+    console.error('Error retrieving the product:', error);
+    res.status(500).json({ error: 'Error while retrieving the product' });
+  }
+};
+
+export const updateProduct = async (req, res) => {
+  const { id } = req.params;
+  const { name, description, stock, sale_price, purchase_price, threshold, prescription_req } = req.body;
+
+  try {
+    const existingProduct = await prisma.products.findUnique({
+      where: { id: parseInt(id) },
+    });
+
+    if (!existingProduct) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    const updatedProduct = await prisma.products.update({
+      where: { id: parseInt(id) },
+      data: {
+        name,
+        description,
+        stock,
+        sale_price,
+        purchase_price,
+        threshold,
+        prescription_req,
+      },
+    });
+
+    res.status(200).json(updatedProduct);
+  } catch (error) {
+    console.error('Error updating the product:', error);
+    res.status(500).json({ error: 'Error while updating the product' });
+  }
+};
+
+export const deleteProduct = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const existingProduct = await prisma.products.findUnique({
+      where: { id: parseInt(id) },
+    });
+
+    if (!existingProduct) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    await prisma.products.delete({
+      where: { id: parseInt(id) },
+    });
+
+    res.status(200).json({ message: 'Product successfully deleted' });
+  } catch (error) {
+    console.error('Error deleting the product:', error);
+    res.status(500).json({ error: 'Error while deleting the product' });
+  }
+};
   

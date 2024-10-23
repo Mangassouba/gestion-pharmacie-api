@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import router from './src/routes/userRoutes.js';
+import productRoute from './src/routes/productRoutes.js';
 // import prisma from './src/config/prisma';
 
 dotenv.config();
@@ -11,6 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use(router);
+app.use(productRoute)
 
 const PORT = process.env.PORT || 3000;
 
