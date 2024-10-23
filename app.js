@@ -1,10 +1,8 @@
-import express from 'express'
-import cors from 'cors'
-
-
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import router from './src/routes/userRoutes.js';
+// import prisma from './src/config/prisma';
 
 dotenv.config();
 
@@ -12,10 +10,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.use(router);
+
 const PORT = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
-  res.send('API Gestion Stock Pharmacie');
+  res.send('Pharmacy Stock Management API');
 });
 
 app.listen(PORT, () => {
