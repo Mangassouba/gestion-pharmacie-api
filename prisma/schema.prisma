@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,107 +8,108 @@ datasource db {
 }
 
 model users {
-  id         Int     @id @default(autoincrement())
+  id         Int          @id @default(autoincrement())
   name       String
-  email      String  @unique
+  email      String       @unique
   password   String
   role       String
   status     String
-  sales      sales[]
-  receptions receptions[]
   orders     orders[]
+  receptions receptions[]
+  sales      sales[]
 }
 
 model products {
-  id                  Int           @id @default(autoincrement())
-  name                String
-  description         String?
-  stock               Int           
-  sale_price          Int          
-  purchase_price      Int           
-  threshold           Int           
-  prescription_req    Boolean       
-  saleDetails         saleDetails[] 
-  orderDetails        orderDetails[]   
-  receptionDetails    receptionDetails[] 
-  inventories         inventories[]   
-  batches             batches[] 
-  stockMovements      stockMovements[]        
+  id               Int                @id @default(autoincrement())
+  name             String
+  description      String?
+  stock            Int
+  sale_price       Int
+  purchase_price   Int
+  threshold        Int
+  prescription_req Boolean
+  batches          batches[]
+  inventories      inventories[]
+  orderDetails     orderDetails[]
+  receptionDetails receptionDetails[]
+  saleDetails      saleDetails[]
+  stockMovements   stockMovements[]
 }
 
 model sales {
-  id              Int          @id @default(autoincrement())
-  sold_products   String
-  sale_date       DateTime
-  userId          Int
-  user            users  @relation(fields: [userId], references: [id]) 
-  details         saleDetails[] 
+  id            Int           @id @default(autoincrement())
+  sold_products String
+  sale_date     DateTime
+  userId        Int
+  details       saleDetails[]
+  user          users         @relation(fields: [userId], references: [id])
 }
 
 model saleDetails {
-  id          Int      @id @default(autoincrement())
-  quantity    Int      
-  price       Int      
-  saleId      Int
-  productId   Int
-  product     products  @relation(fields: [productId], references: [id]) 
-  sale        sales    @relation(fields: [saleId], references: [id])   
+  id        Int      @id @default(autoincrement())
+  quantity  Int
+  price     Int
+  saleId    Int
+  productId Int
+  product   products @relation(fields: [productId], references: [id])
+  sale      sales    @relation(fields: [saleId], references: [id])
 }
 
 model clients {
-  id        Int        @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
+  address   String
   firstName String
   lastName  String
-  address   String
-  orders    orders[] 
+  phone     String
+  orders    orders[]
 }
 
 model orders {
-  id              Int        @id @default(autoincrement())
-  order_date      DateTime
-  clientId        Int
-  client          clients     @relation(fields: [clientId], references: [id]) 
-  userId          Int
-  user            users  @relation(fields: [userId], references: [id]) 
-  details         orderDetails[] 
+  id         Int            @id @default(autoincrement())
+  order_date DateTime
+  clientId   Int
+  userId     Int
+  details    orderDetails[]
+  client     clients        @relation(fields: [clientId], references: [id])
+  user       users          @relation(fields: [userId], references: [id])
 }
 
 model orderDetails {
-  id          Int      @id @default(autoincrement())
-  quantity    Int      
-  price       Decimal  
-  productId   Int
-  orderId     Int
-  product     products  @relation(fields: [productId], references: [id]) 
-  order       orders    @relation(fields: [orderId], references: [id]) 
+  id        Int      @id @default(autoincrement())
+  quantity  Int
+  price     Decimal
+  productId Int
+  orderId   Int
+  order     orders   @relation(fields: [orderId], references: [id])
+  product   products @relation(fields: [productId], references: [id])
 }
 
 model receptions {
-  id              Int          @id @default(autoincrement())
-  ordered_products String
-  order_date       DateTime
+  id               Int                @id @default(autoincrement())
   delivery_date    DateTime
+  order_date       DateTime
+  ordered_products String
   status           String
   userId           Int
-  user             users  @relation(fields: [userId], references: [id]) 
-  details          receptionDetails[] 
+  details          receptionDetails[]
+  user             users              @relation(fields: [userId], references: [id])
 }
 
 model receptionDetails {
-  id          Int      @id @default(autoincrement())
-  quantity    Int      
+  id          Int        @id @default(autoincrement())
+  quantity    Int
   productId   Int
   receptionId Int
-  product     products  @relation(fields: [productId], references: [id]) 
-  reception   receptions @relation(fields: [receptionId], references: [id]) 
+  product     products   @relation(fields: [productId], references: [id])
+  reception   receptions @relation(fields: [receptionId], references: [id])
 }
 
 model suppliers {
-  id        Int     @id @default(autoincrement())
-  name      String
-  address   String
-  contact   String
-  products  String  
+  id       Int    @id @default(autoincrement())
+  name     String
+  address  String
+  contact  String
+  products String
 }
 
 model batches {
@@ -123,22 +118,22 @@ model batches {
   quantity        Int
   expiration_date DateTime
   productId       Int
-  product         products  @relation(fields: [productId], references: [id]) 
+  product         products @relation(fields: [productId], references: [id])
 }
 
 model inventories {
-  id              Int      @id @default(autoincrement())
-  inventory_date  DateTime
-  stock           Int
-  productId       Int
-  product         products  @relation(fields: [productId], references: [id]) 
+  id             Int      @id @default(autoincrement())
+  inventory_date DateTime
+  stock          Int
+  productId      Int
+  product        products @relation(fields: [productId], references: [id])
 }
 
 model stockMovements {
-  id              Int      @id @default(autoincrement())
-  quantity        Int
-  movement_date   DateTime
-  type            String   
-  productId       Int
-  product         products  @relation(fields: [productId], references: [id]) 
+  id            Int      @id @default(autoincrement())
+  quantity      Int
+  movement_date DateTime
+  type          String
+  productId     Int
+  product       products @relation(fields: [productId], references: [id])
 }
