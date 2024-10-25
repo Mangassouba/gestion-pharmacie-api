@@ -33,15 +33,14 @@ export const getSupplierById = async (req, res) => {
 
 
 export const createSupplier = async (req, res) => {
-  const { name, email, phone, address } = req.body;
+  const { name, address, contact } = req.body;
 
   try {
     const newSupplier = await prisma.suppliers.create({
       data: {
         name,
-        email,
-        phone,
         address,
+        contact
       },
     });
 
@@ -55,7 +54,7 @@ export const createSupplier = async (req, res) => {
 
 export const updateSupplier = async (req, res) => {
   const { id } = req.params;
-  const { name, email, phone, address } = req.body;
+  const { name, address, contact } = req.body;
 
   try {
     const existingSupplier = await prisma.suppliers.findUnique({
@@ -70,9 +69,8 @@ export const updateSupplier = async (req, res) => {
       where: { id: parseInt(id) },
       data: {
         name,
-        email,
-        phone,
         address,
+        contact
       },
     });
 

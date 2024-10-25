@@ -9,31 +9,14 @@ const createSupplierValidator = [
     .withMessage('Name is required.')
     .isLength({ min: 3 })
     .withMessage('Name must be at least 3 characters long.'),
-  check('email')
-    .not()
-    .isEmpty()
-    .withMessage('Email is required.')
-    .isEmail()
-    .withMessage('Please provide a valid email.')
-    .custom(async (value) => {
-      const existingSupplier = await prisma.suppliers.findUnique({
-        where: { email: value },
-      });
-      if (existingSupplier) {
-        throw new Error('A supplier with this email already exists.');
-      }
-      return true;
-    }),
-  check('phone')
-    .not()
-    .isEmpty()
-    .withMessage('Phone number is required.')
-    .isMobilePhone()
-    .withMessage('Please provide a valid phone number.'),
   check('address')
     .not()
     .isEmpty()
     .withMessage('Address is required.'),
+  check('contact')
+    .not()
+    .isEmpty()
+    .withMessage('Contact information is required.'),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -60,9 +43,8 @@ const updateSupplierValidator = [
       return true;
     }),
   check('name').optional().isLength({ min: 3 }).withMessage('Name must be at least 3 characters long.'),
-  check('email').optional().isEmail().withMessage('Please provide a valid email.'),
-  check('phone').optional().isMobilePhone().withMessage('Please provide a valid phone number.'),
   check('address').optional(),
+  check('contact').optional(),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -98,7 +80,6 @@ const deleteSupplierValidator = [
     next();
   },
 ];
-
 
 const getSupplierByIdValidator = [
   param('id')
