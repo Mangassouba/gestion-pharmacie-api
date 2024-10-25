@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import router from './src/routes/userRoutes.js';
 import productRoute from './src/routes/productRoutes.js';
-import clientRouter from './src/routes/clientRoutes.js';
+import clientRouter from './src/routes/customersRoutes.js';
 import supplierRouter from './src/routes/supplierRoutes.js';
 // import prisma from './src/config/prisma';
 

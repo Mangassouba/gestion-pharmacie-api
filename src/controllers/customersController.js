@@ -1,15 +1,15 @@
 import prisma from '../config/prisma.js';
 
-// Create a client
+
 export const createClient = async (req, res) => {
-  const { firstName, lastName, address, phone } = req.body;
+  const { address,firstName, lastName, phone } = req.body;
 
   try {
-    const newClient = await prisma.clients.create({
+    const newClient = await prisma.customers.create({
       data: {
+        address,
         firstName,
         lastName,
-        address,
         phone,
       },
     });
@@ -20,10 +20,10 @@ export const createClient = async (req, res) => {
   }
 };
 
-// Get all clients
+
 export const getAllClients = async (req, res) => {
   try {
-    const clients = await prisma.clients.findMany();
+    const clients = await prisma.customers.findMany();
     res.status(200).json(clients);
   } catch (error) {
     console.error(error);
@@ -31,12 +31,12 @@ export const getAllClients = async (req, res) => {
   }
 };
 
-// Get a client by ID
+
 export const getClientById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const client = await prisma.clients.findUnique({
+    const client = await prisma.customers.findUnique({
       where: { id: parseInt(id) },
     });
 
@@ -51,18 +51,18 @@ export const getClientById = async (req, res) => {
   }
 };
 
-// Update a client
+
 export const updateClient = async (req, res) => {
   const { id } = req.params;
-  const { firstName, lastName, address, phone } = req.body;
+  const { address, firstName, lastName, phone } = req.body;
 
   try {
-    const client = await prisma.clients.update({
+    const client = await prisma.customers.update({
       where: { id: parseInt(id) },
       data: {
+        address,
         firstName,
         lastName,
-        address,
         phone,
       },
     });
@@ -73,12 +73,12 @@ export const updateClient = async (req, res) => {
   }
 };
 
-// Delete a client
+
 export const deleteClient = async (req, res) => {
   const { id } = req.params;
 
   try {
-    await prisma.clients.delete({
+    await prisma.customers.delete({
       where: { id: parseInt(id) },
     });
     res.status(200).json({ message: 'Client successfully deleted.' });

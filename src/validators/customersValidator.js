@@ -2,7 +2,6 @@ import { check, param, validationResult } from 'express-validator';
 import { StatusCodes } from 'http-status-codes';
 import prisma from '../config/prisma.js';
 
-// Validator for creating a client
 const createClientValidator = [
   check('firstName')
     .not()
@@ -40,7 +39,7 @@ const createClientValidator = [
   },
 ];
 
-// Validator for updating a client
+
 const updateClientValidator = [
   param('id')
     .not()
@@ -48,7 +47,7 @@ const updateClientValidator = [
     .withMessage('ID is required!')
     .bail()
     .custom(async (value) => {
-      const client = await prisma.clients.findUnique({
+      const client = await prisma.customers.findUnique({
         where: { id: parseInt(value, 10) },
       });
       if (!client) {
@@ -84,7 +83,7 @@ const updateClientValidator = [
   },
 ];
 
-// Validator for deleting a client by ID
+
 const deleteClientValidator = [
   param('id')
     .not()
@@ -92,7 +91,7 @@ const deleteClientValidator = [
     .withMessage('ID is required!')
     .bail()
     .custom(async (value) => {
-      const client = await prisma.clients.findUnique({
+      const client = await prisma.customers.findUnique({
         where: { id: parseInt(value, 10) },
       });
       if (!client) {
@@ -118,7 +117,7 @@ const getClientByIdValidator = [
       .withMessage("Client ID is required.")
       .bail()
       .custom(async (value) => {
-        const client = await prisma.clients.findUnique({
+        const client = await prisma.customers.findUnique({
           where: { id: parseInt(value, 10) },
         });
         if (!client) {
