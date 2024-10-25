@@ -19,7 +19,7 @@ const addRequestValidator = [
     .withMessage("Please provide a valid email.")
     .bail()
     .custom(async (value) => {
-      const result = await prisma.user.findUnique({
+      const result = await prisma.users.findUnique({
         where: { email: value },
       });
       if (result) {
@@ -59,7 +59,7 @@ const deleteRequestValidator = [
     .withMessage("ID is required!")
     .bail()
     .custom(async (value) => {
-      const user = await prisma.user.findUnique({
+      const user = await prisma.users.findUnique({
         where: { id: parseInt(value, 10) },
       });
       if (!user) {
@@ -84,7 +84,7 @@ const updateValidator = [
     .withMessage("ID is required.")
     .bail()
     .custom(async (value) => {
-      const user = await prisma.user.findUnique({
+      const user = await prisma.users.findUnique({
         where: { id: parseInt(value, 10) },
       });
       if (!user) {
@@ -131,7 +131,7 @@ const getByIdValidator = [
     .withMessage("ID is required.")
     .bail()
     .custom(async (value) => {
-      const user = await prisma.user.findUnique({
+      const user = await prisma.users.findUnique({
         where: { id: parseInt(value, 10) },
       });
       if (!user) {

@@ -67,10 +67,10 @@ model orders {
   id         Int            @id @default(autoincrement())
   order_date DateTime
   clientId   Int
-  userId     Int
+  userId     Int?
   details    orderDetails[]
   client     customers        @relation(fields: [clientId], references: [id])
-  user       users          @relation(fields: [userId], references: [id])
+  user       users?          @relation(fields: [userId], references: [id])
 }
 
 model orderDetails {
