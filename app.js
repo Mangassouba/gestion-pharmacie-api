@@ -5,6 +5,7 @@ import router from './src/routes/userRoutes.js';
 import productRoute from './src/routes/productRoutes.js';
 import clientRouter from './src/routes/customersRoutes.js';
 import supplierRouter from './src/routes/supplierRoutes.js';
+import ordersRouter from './src/routes/ordersRoutes.js';
 // import prisma from './src/config/prisma';
 
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(router);
 app.use(productRoute);
 app.use(supplierRouter)
 app.use(clientRouter);
+app.use(ordersRouter);
 
 const PORT = process.env.PORT || 3000;
 
