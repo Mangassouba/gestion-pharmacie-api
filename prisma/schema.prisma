@@ -38,7 +38,6 @@ model products {
 
 model sales {
   id            Int           @id @default(autoincrement())
-  sold_products String
   sale_date     DateTime
   userId        Int
   details       saleDetails[]
@@ -55,7 +54,7 @@ model saleDetails {
   sale      sales    @relation(fields: [saleId], references: [id])
 }
 
-model clients {
+model customers {
   id        Int      @id @default(autoincrement())
   address   String
   firstName String
@@ -70,7 +69,7 @@ model orders {
   clientId   Int
   userId     Int
   details    orderDetails[]
-  client     clients        @relation(fields: [clientId], references: [id])
+  client     customers        @relation(fields: [clientId], references: [id])
   user       users          @relation(fields: [userId], references: [id])
 }
 
@@ -86,10 +85,7 @@ model orderDetails {
 
 model receptions {
   id               Int                @id @default(autoincrement())
-  delivery_date    DateTime
-  order_date       DateTime
-  ordered_products String
-  status           String
+  reception_date       DateTime
   userId           Int
   details          receptionDetails[]
   user             users              @relation(fields: [userId], references: [id])
@@ -98,6 +94,7 @@ model receptions {
 model receptionDetails {
   id          Int        @id @default(autoincrement())
   quantity    Int
+  price Int
   productId   Int
   receptionId Int
   product     products   @relation(fields: [productId], references: [id])
@@ -109,7 +106,6 @@ model suppliers {
   name     String
   address  String
   contact  String
-  products String
 }
 
 model batches {
