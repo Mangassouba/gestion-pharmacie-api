@@ -1,12 +1,21 @@
 import prisma from "../config/prisma.js";
 import { StatusCodes } from "http-status-codes";
 
-// Create a new reception with details
+
+const logStockMovement = async (productId, quantity, type) => {
+    await prisma.stockMovements.create({
+        data: {
+            quantity,
+            movement_date: new Date(),
+            type,
+            productId,
+        },
+    });
+};
 export const createReception = async (req, res) => {
     const { reception_date, userId, details } = req.body;
   
     try {
-      // Create the reception record
       const newReception = await prisma.receptions.create({
         data: {
           reception_date,
@@ -21,13 +30,14 @@ export const createReception = async (req, res) => {
         },
       });
   
-      // Update the stock for each received product
       await Promise.all(
         details.map(async (detail) => {
           await prisma.products.update({
             where: { id: detail.productId },
-            data: { stock: { increment: detail.quantity } }, // Increment stock by the received quantity
+            data: { stock: { increment: detail.quantity } }, 
           });
+  
+          await logStockMovement(detail.productId, detail.quantity, 'reception');
         })
       );
   
@@ -37,8 +47,7 @@ export const createReception = async (req, res) => {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Error while creating the reception.' });
     }
   };
-
-// Get all receptions
+  
 export const getReceptions = async (req, res) => {
   try {
     const receptions = await prisma.receptions.findMany({
@@ -50,7 +59,6 @@ export const getReceptions = async (req, res) => {
   }
 };
 
-// Get a reception by ID
 export const getReceptionById = async (req, res) => {
   const { id } = req.params;
   try {
@@ -67,7 +75,6 @@ export const getReceptionById = async (req, res) => {
   }
 };
 
-// Update a reception and its details
 export const updateReception = async (req, res) => {
   const { id } = req.params;
   const { reception_date, userId, details } = req.body;
@@ -104,7 +111,6 @@ export const updateReception = async (req, res) => {
   }
 };
 
-// Delete a reception
 export const deleteReception = async (req, res) => {
   const { id } = req.params;
   try {
