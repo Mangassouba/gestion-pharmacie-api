@@ -1,21 +1,29 @@
 import prisma from "../config/prisma.js";
 import { StatusCodes } from "http-status-codes";
 
+const logStockMovement = async (productId, quantity, type) => {
+    await prisma.stockMovements.create({
+        data: {
+            quantity,
+            movement_date: new Date(),
+            type,
+            productId,
+        },
+    });
+};
+
 export const createSale = async (req, res) => {
     const { sale_date, userId, details } = req.body;
   
     try {
-      const stockChecks = await Promise.all(
-        details.map(async (detail) => {
-          const product = await prisma.products.findUnique({
-            where: { id: detail.productId },
-          });
-          return product ? product.stock >= detail.quantity : false;
-        })
-      );
+      for (const detail of details) {
+        const product = await prisma.products.findUnique({
+          where: { id: detail.productId },
+        });
   
-      if (stockChecks.includes(false)) {
-        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Insufficient stock for one or more products.' });
+        if (!product || product.stock < detail.quantity) {
+          return res.status(StatusCodes.BAD_REQUEST).json({ error: `Insufficient stock for product ID ${detail.productId}` });
+        }
       }
   
       const newSale = await prisma.sales.create({
@@ -38,6 +46,7 @@ export const createSale = async (req, res) => {
             where: { id: detail.productId },
             data: { stock: { decrement: detail.quantity } },
           });
+          await logStockMovement(detail.productId, -detail.quantity, 'sale');
         })
       );
   
@@ -46,7 +55,7 @@ export const createSale = async (req, res) => {
       console.error('Error creating the sale:', error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Error while creating the sale.' });
     }
-  };
+  }; 
 
 export const getSales = async (req, res) => {
   try {
