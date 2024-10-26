@@ -3,28 +3,40 @@ import { StatusCodes } from "http-status-codes";
 
 // Create a new reception with details
 export const createReception = async (req, res) => {
-  try {
     const { reception_date, userId, details } = req.body;
-
-    const newReception = await prisma.receptions.create({
-      data: {
-        reception_date,
-        userId,
-        details: {
-          create: details.map(detail => ({
-            quantity: detail.quantity,
-            price: detail.price,
-            product: { connect: { id: detail.productId } }
-          }))
-        }
-      }
-    });
-
-    res.status(StatusCodes.CREATED).json(newReception);
-  } catch (error) {
-    res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
-  }
-};
+  
+    try {
+      // Create the reception record
+      const newReception = await prisma.receptions.create({
+        data: {
+          reception_date,
+          userId,
+          details: {
+            create: details.map((detail) => ({
+              quantity: detail.quantity,
+              price: detail.price,
+              product: { connect: { id: detail.productId } },
+            })),
+          },
+        },
+      });
+  
+      // Update the stock for each received product
+      await Promise.all(
+        details.map(async (detail) => {
+          await prisma.products.update({
+            where: { id: detail.productId },
+            data: { stock: { increment: detail.quantity } }, // Increment stock by the received quantity
+          });
+        })
+      );
+  
+      res.status(StatusCodes.CREATED).json(newReception);
+    } catch (error) {
+      console.error('Error creating the reception:', error);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Error while creating the reception.' });
+    }
+  };
 
 // Get all receptions
 export const getReceptions = async (req, res) => {
