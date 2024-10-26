@@ -9,6 +9,7 @@ import ordersRouter from './src/routes/ordersRoutes.js';
 import saleRouter from './src/routes/saleRoutes.js';
 import batcheRrouter from './src/routes/batchesRoutes.js';
 import movementRouter from './src/routes/stockMovements.js';
+import iventoryRouter from './src/routes/inventoryRoutes.js';
 // import prisma from './src/config/prisma';
 
 dotenv.config();
@@ -25,6 +26,7 @@ app.use(ordersRouter);
 app.use(saleRouter);
 app.use(batcheRrouter)
 app.use(movementRouter)
+app.use(iventoryRouter)
 
 const PORT = process.env.PORT || 3000;
 
