@@ -2,35 +2,51 @@ import prisma from "../config/prisma.js";
 import { StatusCodes } from "http-status-codes";
 
 export const createSale = async (req, res) => {
-  try {
     const { sale_date, userId, details } = req.body;
-
-    // Validate user existence
-    const userExists = await prisma.users.findUnique({ where: { id: userId } });
-    if (!userExists) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ error: "User not found" });
-    }
-
-    const newSale = await prisma.sales.create({
-      data: {
-        sale_date,
-        userId,
-        details: {
-          create: details.map((detail) => ({
-            quantity: detail.quantity,
-            price: detail.price,
-            product: { connect: { id: detail.productId } },
-          })),
+  
+    try {
+      const stockChecks = await Promise.all(
+        details.map(async (detail) => {
+          const product = await prisma.products.findUnique({
+            where: { id: detail.productId },
+          });
+          return product ? product.stock >= detail.quantity : false;
+        })
+      );
+  
+      if (stockChecks.includes(false)) {
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Insufficient stock for one or more products.' });
+      }
+  
+      const newSale = await prisma.sales.create({
+        data: {
+          sale_date,
+          userId,
+          details: {
+            create: details.map((detail) => ({
+              quantity: detail.quantity,
+              price: detail.price,
+              product: { connect: { id: detail.productId } },
+            })),
+          },
         },
-      },
-    });
-
-    res.status(StatusCodes.CREATED).json(newSale);
-  } catch (error) {
-    console.log(error);  // Logs the error to the console
-    res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
-  }
-};
+      });
+  
+      await Promise.all(
+        details.map(async (detail) => {
+          await prisma.products.update({
+            where: { id: detail.productId },
+            data: { stock: { decrement: detail.quantity } },
+          });
+        })
+      );
+  
+      res.status(StatusCodes.CREATED).json(newSale);
+    } catch (error) {
+      console.error('Error creating the sale:', error);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Error while creating the sale.' });
+    }
+  };
 
 export const getSales = async (req, res) => {
   try {
@@ -39,7 +55,7 @@ export const getSales = async (req, res) => {
     });
     res.status(StatusCodes.OK).json(sales);
   } catch (error) {
-    console.log(error);  // Logs the error to the console
+    console.log(error);
     res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
   }
 };
@@ -56,7 +72,7 @@ export const getSaleById = async (req, res) => {
     }
     res.status(StatusCodes.OK).json(sale);
   } catch (error) {
-    console.log(error);  // Logs the error to the console
+    console.log(error);
     res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
   }
 };
@@ -73,7 +89,6 @@ export const updateSale = async (req, res) => {
       return res.status(StatusCodes.NOT_FOUND).json({ error: "Sale not found" });
     }
 
-    // Validate user existence if updated
     if (userId) {
       const userExists = await prisma.users.findUnique({ where: { id: userId } });
       if (!userExists) {
@@ -82,12 +97,11 @@ export const updateSale = async (req, res) => {
     }
 
     const updatedSale = await prisma.$transaction(async (prisma) => {
-      // Clear old sale details
+
       await prisma.saleDetails.deleteMany({
         where: { saleId: Number(id) },
       });
 
-      // Update sale and add new sale details
       return prisma.sales.update({
         where: { id: Number(id) },
         data: {
@@ -106,7 +120,7 @@ export const updateSale = async (req, res) => {
 
     res.status(StatusCodes.OK).json(updatedSale);
   } catch (error) {
-    console.log(error);  // Logs the error to the console
+    console.log(error);
     res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
   }
 };
@@ -119,7 +133,7 @@ export const deleteSale = async (req, res) => {
     });
     res.status(StatusCodes.OK).json({ message: "Sale successfully deleted" });
   } catch (error) {
-    console.log(error);  // Logs the error to the console
+    console.log(error);
     if (error.code === "P2003") {
       return res.status(StatusCodes.BAD_REQUEST).json({
         error: "Cannot delete sale due to existing references",
