@@ -77,6 +77,15 @@ i18next.init({
             deletionSuccess: "User successfully deleted.",
             deletionError: "Error while deleting the user."
         },
+        stockMovement: {
+            creationError: "An error occurred while creating the stock movement.",
+            fetchAllError: "An error occurred while fetching all stock movements.",
+            notFound: "Stock movement not found.",
+            fetchError: "An error occurred while fetching the stock movement.",
+            updateError: "An error occurred while updating the stock movement.",
+            deletionSuccess: "Stock movement successfully deleted.",
+            deletionError: "An error occurred while deleting the stock movement."
+        },
       },
     },
     fr: {
@@ -151,6 +160,15 @@ i18next.init({
             updateError: "Erreur lors de la mise à jour de l'utilisateur.",
             deletionSuccess: "Utilisateur supprimé avec succès.",
             deletionError: "Erreur lors de la suppression de l'utilisateur."
+        },
+        stockMovement: {
+            creationError: "Une erreur est survenue lors de la création du mouvement de stock.",
+            fetchAllError: "Une erreur est survenue lors de la récupération de tous les mouvements de stock.",
+            notFound: "Mouvement de stock non trouvé.",
+            fetchError: "Une erreur est survenue lors de la récupération du mouvement de stock.",
+            updateError: "Une erreur est survenue lors de la mise à jour du mouvement de stock.",
+            deletionSuccess: "Mouvement de stock supprimé avec succès.",
+            deletionError: "Une erreur est survenue lors de la suppression du mouvement de stock."
         },
       },
     },
@@ -227,6 +245,15 @@ createError: 'الرمز غير صالح أو منتهي الصلاحية',
             updateError: "خطأ أثناء تحديث المستخدم.",
             deletionSuccess: "تم حذف المستخدم بنجاح.",
             deletionError: "خطأ أثناء حذف المستخدم."
+        },
+        stockMovement: {
+            creationError: "حدث خطأ أثناء إنشاء حركة المخزون.",
+            fetchAllError: "حدث خطأ أثناء جلب جميع حركات المخزون.",
+            notFound: "لم يتم العثور على حركة المخزون.",
+            fetchError: "حدث خطأ أثناء جلب حركة المخزون.",
+            updateError: "حدث خطأ أثناء تحديث حركة المخزون.",
+            deletionSuccess: "تم حذف حركة المخزون بنجاح.",
+            deletionError: "حدث خطأ أثناء حذف حركة المخزون."
         },
       },
     },
