@@ -1,4 +1,5 @@
 import prisma from "../config/prisma.js";
+import i18next from "../i18n.js";
 
 export const createProduct = async (req, res) => {
   const { name, description, stock, sale_price, purchase_price, threshold, prescription_req } = req.body;
@@ -19,10 +20,9 @@ export const createProduct = async (req, res) => {
     res.status(201).json(newProduct); 
   } catch (error) {
     console.error("Error creating product:", error);
-    res.status(500).json({ error: 'Error while creating the product.' });
+    res.status(500).json({ error: i18next.t('product.creationError') }); // Use translation key
   }
 };
-
 
 export const getAllProducts = async (req, res) => {
   try {
@@ -30,7 +30,7 @@ export const getAllProducts = async (req, res) => {
     res.status(200).json(products);
   } catch (error) {
     console.error('Error retrieving products:', error);
-    res.status(500).json({ error: 'Error while retrieving products' });
+    res.status(500).json({ error: i18next.t('product.fetchAllError') }); // Use translation key
   }
 };
 
@@ -43,13 +43,13 @@ export const getProductById = async (req, res) => {
     });
 
     if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
+      return res.status(404).json({ error: i18next.t('product.notFound') }); // Use translation key
     }
 
     res.status(200).json(product);
   } catch (error) {
     console.error('Error retrieving the product:', error);
-    res.status(500).json({ error: 'Error while retrieving the product' });
+    res.status(500).json({ error: i18next.t('product.fetchError') }); // Use translation key
   }
 };
 
@@ -63,7 +63,7 @@ export const updateProduct = async (req, res) => {
     });
 
     if (!existingProduct) {
-      return res.status(404).json({ error: 'Product not found' });
+      return res.status(404).json({ error: i18next.t('product.notFound') }); // Use translation key
     }
 
     const updatedProduct = await prisma.products.update({
@@ -82,7 +82,7 @@ export const updateProduct = async (req, res) => {
     res.status(200).json(updatedProduct);
   } catch (error) {
     console.error('Error updating the product:', error);
-    res.status(500).json({ error: 'Error while updating the product' });
+    res.status(500).json({ error: i18next.t('product.updateError') }); // Use translation key
   }
 };
 
@@ -95,17 +95,16 @@ export const deleteProduct = async (req, res) => {
     });
 
     if (!existingProduct) {
-      return res.status(404).json({ error: 'Product not found' });
+      return res.status(404).json({ error: i18next.t('product.notFound') }); // Use translation key
     }
 
     await prisma.products.delete({
       where: { id: parseInt(id) },
     });
 
-    res.status(200).json({ message: 'Product successfully deleted' });
+    res.status(200).json({ message: i18next.t('product.deletionSuccess') }); // Use translation key
   } catch (error) {
     console.error('Error deleting the product:', error);
-    res.status(500).json({ error: 'Error while deleting the product' });
+    res.status(500).json({ error: i18next.t('product.deletionError') }); // Use translation key
   }
 };
-  
