@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import prisma from '../config/prisma.js';
+import i18next from '../i18n.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
 
@@ -12,12 +13,12 @@ export const login = async (req, res) => {
       where: { email },
     });
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: i18next.t('utilisateur.fetchError') });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ message: 'Incorrect password' });
+      return res.status(401).json({ message: i18next.t('utilisateur.loginError') });
     }
 
     const token = jwt.sign(
@@ -26,9 +27,9 @@ export const login = async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    res.status(200).json({ message: 'Connection successful', token });
+    res.status(200).json({ message: i18next.t('utilisateur.loginSuccess'), token });
   } catch (error) {
-    res.status(500).json({ message: 'Error connecting ', error });
+    res.status(500).json({ message: i18next.t('utilisateur.fetchError'), error });
   }
 };
 
@@ -36,7 +37,7 @@ export const verifyToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
 
   if (!authHeader) {
-    return res.status(403).json({ message: 'Access prohibited, token missing' });
+    return res.status(403).json({ message: i18next.t('token.fetchError') });
   }
 
   try {
@@ -50,11 +51,11 @@ export const verifyToken = (req, res, next) => {
     };
 
     if (req.user.status !== 'active') {
-      return res.status(403).json({ message: 'Inactive user account' });
+      return res.status(403).json({ message: i18next.t('utilisateur.adminAccess') });
     }
 
     next();
   } catch (error) {
-    return res.status(401).json({ message: 'Invalid or expired token' });
+    return res.status(401).json({ message: i18next.t('token.createError') });
   }
 };
