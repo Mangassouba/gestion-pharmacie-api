@@ -10,6 +10,15 @@ i18next.init({
             fetchError: 'Token is requier',
             createError: 'Token is invalide or expired',
           },
+          auth: {
+            userNotFound: "User not found.",
+            incorrectPassword: "Incorrect password.",
+            loginSuccess: "Login successful.",
+            loginError: "Error during login.",
+            accessForbidden: "Access forbidden, token missing.",
+            userInactive: "User account is inactive.",
+            invalidToken: "Invalid or expired token."
+            },
         supplier: {
             fetchAllError: "Error while retrieving suppliers.",
             notFound: "Supplier not found.",
@@ -94,6 +103,15 @@ i18next.init({
             fetchError: 'Token est requis',
             createError: 'Token est invalide ou expiré',
           },
+          auth: {
+            userNotFound: "Utilisateur non trouvé.",
+            incorrectPassword: "Mot de passe incorrect.",
+            loginSuccess: "Connexion réussie.",
+            loginError: "Erreur lors de la connexion.",
+            accessForbidden: "Accès interdit, jeton manquant.",
+            userInactive: "Compte utilisateur inactif.",
+            invalidToken: "Jeton invalide ou expiré."
+            },
         supplier: {
             fetchAllError: "Erreur lors de la récupération des fournisseurs.",
             notFound: "Fournisseur non trouvé.",
@@ -179,6 +197,15 @@ i18next.init({
 createError: 'الرمز غير صالح أو منتهي الصلاحية',
 
           },
+          auth: {
+            userNotFound: "لم يتم العثور على المستخدم.",
+            incorrectPassword: "كلمة المرور غير صحيحة.",
+            loginSuccess: "تم تسجيل الدخول بنجاح.",
+            loginError: "حدث خطأ أثناء تسجيل الدخول.",
+            accessForbidden: "الوصول ممنوع، الرمز مفقود.",
+            userInactive: "حساب المستخدم غير نشط.",
+            invalidToken: "الرمز غير صالح أو منتهي الصلاحية."
+            },
         supplier: {
             fetchAllError: "حدث خطأ أثناء جلب الموردين.",
             notFound: "لم يتم العثور على المورد.",

@@ -13,12 +13,12 @@ export const login = async (req, res) => {
       where: { email },
     });
     if (!user) {
-      return res.status(404).json({ message: i18next.t('utilisateur.fetchError') });
+      return res.status(404).json({ message: i18next.t('auth.userNotFound') });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ message: i18next.t('utilisateur.loginError') });
+      return res.status(401).json({ message: i18next.t('auth.incorrectPassword') });
     }
 
     const token = jwt.sign(
@@ -27,9 +27,9 @@ export const login = async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    res.status(200).json({ message: i18next.t('utilisateur.loginSuccess'), token });
+    res.status(200).json({ message: i18next.t('auth.loginSuccess'), token });
   } catch (error) {
-    res.status(500).json({ message: i18next.t('utilisateur.fetchError'), error });
+    res.status(500).json({ message: i18next.t('auth.loginError'), error });
   }
 };
 
@@ -37,7 +37,7 @@ export const verifyToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
 
   if (!authHeader) {
-    return res.status(403).json({ message: i18next.t('token.fetchError') });
+    return res.status(403).json({ message: i18next.t('auth.accessForbidden') });
   }
 
   try {
@@ -51,11 +51,11 @@ export const verifyToken = (req, res, next) => {
     };
 
     if (req.user.status !== 'active') {
-      return res.status(403).json({ message: i18next.t('utilisateur.adminAccess') });
+      return res.status(403).json({ message: i18next.t('auth.userInactive') });
     }
 
     next();
   } catch (error) {
-    return res.status(401).json({ message: i18next.t('token.createError') });
+    return res.status(401).json({ message: i18next.t('auth.invalidToken') });
   }
 };
