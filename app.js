@@ -11,6 +11,7 @@ import batcheRrouter from './src/routes/batchesRoutes.js';
 import movementRouter from './src/routes/stockMovements.js';
 import iventoryRouter from './src/routes/inventoryRoutes.js';
 import receptionsRouter from './src/routes/receptionRoutes.js';
+import authRouter from './src/routes/authRoutes.js';
 // import prisma from './src/config/prisma';
 
 dotenv.config();
@@ -19,6 +20,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.use(authRouter)
 app.use(router);
 app.use(productRoute);
 app.use(supplierRouter)
