@@ -1,5 +1,6 @@
 import prisma from "../config/prisma.js";
 import bcrypt from 'bcryptjs';
+import i18next from '../i18n.js';
 
 export const createUser = async (req, res) => {
   const { name, email, password, role, status } = req.body;
@@ -19,17 +20,16 @@ export const createUser = async (req, res) => {
 
     res.status(201).json(user);
   } catch (error) {
-    res.status(500).json({ error: 'Error while creating the user' });
+    res.status(500).json({ error: i18next.t('user.creationError') });
   }
 };
 
 export const getAllUsers = async (req, res) => {
   try {
     const users = await prisma.users.findMany();
-
     res.status(200).json(users);
   } catch (error) {
-    res.status(500).json({ error: 'Error while fetching users' });
+    res.status(500).json({ error: i18next.t('user.fetchAllError') });
   }
 };
 
@@ -42,12 +42,12 @@ export const getUserById = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: i18next.t('user.notFound') });
     }
 
     res.status(200).json(user);
   } catch (error) {
-    res.status(500).json({ error: 'Error while fetching the user' });
+    res.status(500).json({ error: i18next.t('user.fetchError') });
   }
 };
 
@@ -61,7 +61,7 @@ export const updateUser = async (req, res) => {
     });
 
     if (!existingUser) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: i18next.t('user.notFound') });
     }
 
     let updatedData = { name, email, role, status };
@@ -79,14 +79,12 @@ export const updateUser = async (req, res) => {
     res.status(200).json(user);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error while updating the user' });
+    res.status(500).json({ error: i18next.t('user.updateError') });
   }
 };
 
-
 export const deleteUser = async (req, res) => {
   const { id } = req.params;
-  console.log(req.params);
 
   try {
     const user = await prisma.users.findUnique({
@@ -94,17 +92,16 @@ export const deleteUser = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found.' });
+      return res.status(404).json({ error: i18next.t('user.notFound') });
     }
-    const deletedUser = await prisma.users.delete({
+
+    await prisma.users.delete({
       where: { id: parseInt(id) },
     });
 
-    res.status(200).json({ message: 'User successfully deleted.' });
+    res.status(200).json({ message: i18next.t('user.deletionSuccess') });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error while deleting the user.' });
+    res.status(500).json({ error: i18next.t('user.deletionError') });
   }
 };
-
-
