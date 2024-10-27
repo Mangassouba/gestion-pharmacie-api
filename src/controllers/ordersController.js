@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import i18next from '../i18n.js'; 
 const prisma = new PrismaClient();
 
 export const createOrder = async (req, res) => {
@@ -11,11 +12,10 @@ export const createOrder = async (req, res) => {
     });
 
     if (!customerExists) {
-      return res.status(404).json({ error: 'Customer not found' });
+      return res.status(404).json({ error: i18next.t('order.customerNotFound') });
     }
 
-    // Calculate total amount and check products existence
-    let totalAmount = 0;
+    // Check products existence
     for (const detail of detailsOrder) {
       const productExists = await prisma.products.findUnique({
         where: { id: detail.productId },
@@ -23,11 +23,9 @@ export const createOrder = async (req, res) => {
 
       if (!productExists) {
         return res.status(404).json({
-          error: `Product with ID ${detail.productId} not found`,
+          error: i18next.t('order.productNotFound', { productId: detail.productId }),
         });
       }
-
-    //   totalAmount += detail.quantity * detail.price;
     }
 
     // Create the order
@@ -47,11 +45,10 @@ export const createOrder = async (req, res) => {
 
     res.status(201).json(newOrder);
   } catch (error) {
-    res.status(400).json(console.log(error)
-    );
+    console.error('Error creating order:', error);
+    res.status(400).json({ error: i18next.t('order.creationError') });
   }
 };
-
 
 export const getOrders = async (req, res) => {
   try {
@@ -63,36 +60,38 @@ export const getOrders = async (req, res) => {
     });
     res.status(200).json(orders);
   } catch (error) {
+    console.error('Error fetching orders:', error);
     res.status(400).json({
-      error: `Error fetching orders: ${error.message}`,
+      error: i18next.t('order.fetchAllError', { message: error.message }),
     });
   }
 };
 
 export const getOrderById = async (req, res) => {
-    const { id } = req.params;
-  
-    try {
-      // Fetch the order by ID
-      const order = await prisma.orders.findUnique({
-        where: { id: Number(id) },
-        include: {
-          details: true,  // Include details of the order
-          client: true,   // Include client information
-        },
-      });
-  
-      if (!order) {
-        return res.status(404).json({ error: 'Order not found' });
-      }
-  
-      res.status(200).json(order);
-    } catch (error) {
-      res.status(400).json({
-        error: `Error fetching the order: ${error.message}`,
-      });
+  const { id } = req.params;
+
+  try {
+    // Fetch the order by ID
+    const order = await prisma.orders.findUnique({
+      where: { id: Number(id) },
+      include: {
+        details: true,  // Include details of the order
+        client: true,   // Include client information
+      },
+    });
+
+    if (!order) {
+      return res.status(404).json({ error: i18next.t('order.notFound') });
     }
-  };
+
+    res.status(200).json(order);
+  } catch (error) {
+    console.error('Error fetching the order:', error);
+    res.status(400).json({
+      error: i18next.t('order.fetchError', { message: error.message }),
+    });
+  }
+};
 
 export const updateOrder = async (req, res) => {
   const { id } = req.params;
@@ -105,7 +104,7 @@ export const updateOrder = async (req, res) => {
     });
 
     if (!orderExists) {
-      return res.status(404).json({ error: 'Order not found' });
+      return res.status(404).json({ error: i18next.t('order.notFound') });
     }
 
     // Check if customer exists
@@ -114,11 +113,10 @@ export const updateOrder = async (req, res) => {
     });
 
     if (!customerExists) {
-      return res.status(404).json({ error: 'Customer not found' });
+      return res.status(404).json({ error: i18next.t('order.customerNotFound') });
     }
 
-    // Calculate total amount and check products existence
-    // let totalAmount = 0;
+    // Check products existence
     for (const detail of detailsOrder) {
       const productExists = await prisma.products.findUnique({
         where: { id: detail.productId },
@@ -126,11 +124,9 @@ export const updateOrder = async (req, res) => {
 
       if (!productExists) {
         return res.status(404).json({
-          error: `Product with ID ${detail.productId} not found`,
+          error: i18next.t('order.productNotFound', { productId: detail.productId }),
         });
       }
-
-    //   totalAmount += detail.quantity * detail.price;
     }
 
     // Update the order and its details
@@ -153,8 +149,9 @@ export const updateOrder = async (req, res) => {
 
     res.status(200).json(updatedOrder);
   } catch (error) {
+    console.error('Error updating the order:', error);
     res.status(400).json({
-      error: `Error updating the order: ${error.message}`,
+      error: i18next.t('order.updateError', { message: error.message }),
     });
   }
 };
@@ -168,17 +165,18 @@ export const deleteOrder = async (req, res) => {
     });
 
     if (!existingOrder) {
-      return res.status(404).json({ error: 'Order not found' });
+      return res.status(404).json({ error: i18next.t('order.notFound') });
     }
 
     await prisma.orders.delete({
       where: { id: Number(id) },
     });
 
-    res.status(200).json({ message: 'Order successfully deleted' });
+    res.status(200).json({ message: i18next.t('order.deletionSuccess') });
   } catch (error) {
+    console.error('Error deleting the order:', error);
     res.status(400).json({
-      error: `Error deleting the order: ${error.message}`,
+      error: i18next.t('order.deletionError', { message: error.message }),
     });
   }
 };

@@ -28,14 +28,16 @@ i18next.init({
             deletionSuccess: "Client successfully deleted.",
             deletionError: "Error while deleting the client."
         },
-        order: {
-          fetchError: 'Error while fetching orders',
-          createError: 'Error while creating order',
-          updateError: 'Error while updating order',
-          deleteError: 'Error while deleting order',
-          adminAccess: 'Access denied: Only an admin can modify an order.',
-          adminDelete: 'Access denied: Only an admin can delete an order.',
-          successDelete: 'Order successfully deleted',
+    order: {
+            customerNotFound: "Customer not found",
+            productNotFound: "Product with ID {{productId}} not found",
+            creationError: "Error occurred while creating the order",
+            fetchAllError: "Error occurred while fetching orders: {{message}}",
+            notFound: "Order not found",
+            fetchError: "Error occurred while fetching the order: {{message}}",
+            updateError: "Error occurred while updating the order: {{message}}",
+            deletionSuccess: "Order deleted successfully",
+            deletionError: "Error occurred while deleting the order: {{message}}"
         },
         product: {
             creationError: "Error while creating the product.",
@@ -102,14 +104,16 @@ i18next.init({
             deletionError: "Error while deleting the client."
         },
         order: {
-          fetchError: 'Erreur lors de la récupération des commandes',
-          createError: 'Erreur lors de la création de la commande',
-          updateError: 'Erreur lors de la mise à jour de la commande',
-          deleteError: 'Erreur lors de la suppression de la commande',
-          adminAccess: 'Accès refusé : seul un administrateur peut modifier une commande.',
-          adminDelete: 'Accès refusé : seul un administrateur peut supprimer une commande.',
-          successDelete: 'Commande supprimée avec succès',
-        },
+            customerNotFound: "Client non trouvé",
+            productNotFound: "Produit avec l'ID {{productId}} non trouvé",
+            creationError: "Erreur lors de la création de la commande",
+            fetchAllError: "Erreur lors de la récupération des commandes: {{message}}",
+            notFound: "Commande non trouvée",
+            fetchError: "Erreur lors de la récupération de la commande: {{message}}",
+            updateError: "Erreur lors de la mise à jour de la commande: {{message}}",
+            deletionSuccess: "Commande supprimée avec succès",
+            deletionError: "Erreur lors de la suppression de la commande: {{message}}"
+          },
         product: {
             creationError: "Erreur lors de la création du produit.",
             fetchAllError: "Erreur lors de la récupération des produits.",
@@ -176,13 +180,15 @@ createError: 'الرمز غير صالح أو منتهي الصلاحية',
             deletionError: "خطأ أثناء حذف العميل."
         },
         order: {
-          fetchError: 'خطأ أثناء جلب الطلبات',
-          createError: 'خطأ أثناء إنشاء الطلب',
-          updateError: 'خطأ أثناء تحديث الطلب',
-          deleteError: 'خطأ أثناء حذف الطلب',
-          adminAccess: 'الوصول مرفوض: يمكن للمسؤول فقط تعديل الطلب.',
-          adminDelete: 'الوصول مرفوض: يمكن للمسؤول فقط حذف الطلب.',
-          successDelete: 'تم حذف الطلب بنجاح',
+            customerNotFound: "العميل غير موجود",
+            productNotFound: "المنتج بالمعرف {{productId}} غير موجود",
+            creationError: "حدث خطأ أثناء إنشاء الطلب",
+            fetchAllError: "حدث خطأ أثناء استرجاع الطلبات: {{message}}",
+            notFound: "الطلب غير موجود",
+            fetchError: "حدث خطأ أثناء استرجاع الطلب: {{message}}",
+            updateError: "حدث خطأ أثناء تحديث الطلب: {{message}}",
+            deletionSuccess: "تم حذف الطلب بنجاح",
+            deletionError: "حدث خطأ أثناء حذف الطلب: {{message}}"
         },
         product: {
             creationError: "خطأ أثناء إنشاء المنتج.",
