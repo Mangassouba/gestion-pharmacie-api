@@ -10,15 +10,15 @@ i18next.init({
             fetchError: 'Token is requier',
             createError: 'Token is invalide or expired',
           },
-        supply: {
-          fetchError: 'Error while fetching supplies',
-          createError: 'Error while creating supply',
-          updateError: 'Error while updating supply',
-          deleteError: 'Error while deleting supply',
-          adminAccess: 'Access denied: Only an admin can modify a supply.',
-          adminDelete: 'Access denied: Only an admin can delete a supply.',
-          successDelete: 'Supply successfully deleted',
-        },
+        supplier: {
+            fetchAllError: "Error while retrieving suppliers.",
+            notFound: "Supplier not found.",
+            fetchError: "Error while retrieving the supplier.",
+            creationError: "Error while creating supplier.",
+            updateError: "Error while updating supplier.",
+            deletionSuccess: "Supplier successfully deleted.",
+            deletionError: "Error while deleting supplier."
+            },
         customer: {
             creationError: "Error while creating the client.",
             fetchAllError: "Error while fetching the clients.",
@@ -94,15 +94,15 @@ i18next.init({
             fetchError: 'Token est requis',
             createError: 'Token est invalide ou expiré',
           },
-        supply: {
-          fetchError: 'Erreur lors de la récupération des fournitures',
-          createError: 'Erreur lors de la création de la fourniture',
-          updateError: 'Erreur lors de la mise à jour de la fourniture',
-          deleteError: 'Erreur lors de la suppression de la fourniture',
-          adminAccess: 'Accès refusé : Seul un administrateur peut modifier une fourniture.',
-          adminDelete: 'Accès refusé : Seul un administrateur peut supprimer une fourniture.',
-          successDelete: 'Fourniture supprimée avec succès',
-        },
+        supplier: {
+            fetchAllError: "Erreur lors de la récupération des fournisseurs.",
+            notFound: "Fournisseur non trouvé.",
+            fetchError: "Erreur lors de la récupération du fournisseur.",
+            creationError: "Erreur lors de la création du fournisseur.",
+            updateError: "Erreur lors de la mise à jour du fournisseur.",
+            deletionSuccess: "Fournisseur supprimé avec succès.",
+            deletionError: "Erreur lors de la suppression du fournisseur."
+            },
         customer: {
             creationError: "Error while creating the client.",
             fetchAllError: "Error while fetching the clients.",
@@ -179,15 +179,15 @@ i18next.init({
 createError: 'الرمز غير صالح أو منتهي الصلاحية',
 
           },
-        supply: {
-          fetchError: 'خطأ أثناء جلب اللوازم',
-          createError: 'خطأ أثناء إنشاء اللوازم',
-          updateError: 'خطأ أثناء تحديث اللوازم',
-          deleteError: 'خطأ أثناء حذف اللوازم',
-          adminAccess: 'الوصول مرفوض: يمكن للمسؤول فقط تعديل اللوازم.',
-          adminDelete: 'الوصول مرفوض: يمكن للمسؤول فقط حذف اللوازم.',
-          successDelete: 'تم حذف اللوازم بنجاح',
-        },
+        supplier: {
+            fetchAllError: "حدث خطأ أثناء جلب الموردين.",
+            notFound: "لم يتم العثور على المورد.",
+            fetchError: "حدث خطأ أثناء جلب المورد.",
+            creationError: "حدث خطأ أثناء إنشاء المورد.",
+            updateError: "حدث خطأ أثناء تحديث المورد.",
+            deletionSuccess: "تم حذف المورد بنجاح.",
+            deletionError: "حدث خطأ أثناء حذف المورد."
+            },
         customer: {
             creationError: "خطأ أثناء إنشاء العميل.",
             fetchAllError: "خطأ أثناء جلب العملاء.",

@@ -1,106 +1,87 @@
 import prisma from '../config/prisma.js';
-
+import i18next from '../i18n.js';
+import { StatusCodes } from 'http-status-codes';
 
 export const getAllSuppliers = async (req, res) => {
   try {
     const suppliers = await prisma.suppliers.findMany();
-    res.status(200).json(suppliers);
+    res.status(StatusCodes.OK).json(suppliers);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error while retrieving suppliers' });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: i18next.t('supplier.retrieveError', { message: error.message }) });
   }
 };
-
 
 export const getSupplierById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const supplier = await prisma.suppliers.findUnique({
-      where: { id: parseInt(id) },
-    });
+    const supplier = await prisma.suppliers.findUnique({ where: { id: parseInt(id) } });
 
     if (!supplier) {
-      return res.status(404).json({ message: 'Supplier not found' });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: i18next.t('supplier.notFound') });
     }
 
-    res.status(200).json(supplier);
+    res.status(StatusCodes.OK).json(supplier);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error while retrieving the supplier' });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: i18next.t('supplier.retrieveError', { message: error.message }) });
   }
 };
-
 
 export const createSupplier = async (req, res) => {
   const { name, address, contact } = req.body;
 
   try {
     const newSupplier = await prisma.suppliers.create({
-      data: {
-        name,
-        address,
-        contact
-      },
+      data: { name, address, contact },
     });
 
-    res.status(201).json(newSupplier);
+    res.status(StatusCodes.CREATED).json(newSupplier);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error while creating supplier' });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: i18next.t('supplier.creationError', { message: error.message }) });
   }
 };
-
 
 export const updateSupplier = async (req, res) => {
   const { id } = req.params;
   const { name, address, contact } = req.body;
 
   try {
-    const existingSupplier = await prisma.suppliers.findUnique({
-      where: { id: parseInt(id) },
-    });
+    const existingSupplier = await prisma.suppliers.findUnique({ where: { id: parseInt(id) } });
 
     if (!existingSupplier) {
-      return res.status(404).json({ error: 'Supplier not found' });
+      return res.status(StatusCodes.NOT_FOUND).json({ error: i18next.t('supplier.notFound') });
     }
 
     const updatedSupplier = await prisma.suppliers.update({
       where: { id: parseInt(id) },
-      data: {
-        name,
-        address,
-        contact
-      },
+      data: { name, address, contact },
     });
 
-    res.status(200).json(updatedSupplier);
+    res.status(StatusCodes.OK).json(updatedSupplier);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error while updating supplier' });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: i18next.t('supplier.updateError', { message: error.message }) });
   }
 };
-
 
 export const deleteSupplier = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const existingSupplier = await prisma.suppliers.findUnique({
-      where: { id: parseInt(id) },
-    });
+    const existingSupplier = await prisma.suppliers.findUnique({ where: { id: parseInt(id) } });
 
     if (!existingSupplier) {
-      return res.status(404).json({ error: 'Supplier not found' });
+      return res.status(StatusCodes.NOT_FOUND).json({ error: i18next.t('supplier.notFound') });
     }
 
-    await prisma.suppliers.delete({
-      where: { id: parseInt(id) },
-    });
+    await prisma.suppliers.delete({ where: { id: parseInt(id) } });
 
-    res.status(200).json({ message: 'Supplier successfully deleted' });
+    res.status(StatusCodes.OK).json({ message: i18next.t('supplier.deletionSuccess') });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error while deleting supplier' });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: i18next.t('supplier.deletionError', { message: error.message }) });
   }
 };
