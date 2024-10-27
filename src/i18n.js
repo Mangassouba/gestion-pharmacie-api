@@ -124,13 +124,13 @@ i18next.init({
             deletionError: "Erreur lors de la suppression du produit."
         },
         reception: {
-          fetchError: 'Erreur lors de la récupération des réceptions',
-          createError: 'Erreur lors de la création de la réception',
-          updateError: 'Erreur lors de la mise à jour de la réception',
-          deleteError: 'Erreur lors de la suppression de la réception',
-          adminAccess: 'Accès refusé : seul un administrateur peut modifier une réception.',
-          adminDelete: 'Accès refusé : seul un administrateur peut supprimer une réception.',
-          successDelete: 'Réception supprimée avec succès',
+            creationError: "Erreur lors de la création de la réception.",
+            fetchAllError: "Erreur lors de la récupération des réceptions.",
+            notFound: "Réception non trouvée",
+            fetchError: "Erreur lors de la récupération de la réception.",
+            updateError: "Erreur lors de la mise à jour de la réception.",
+            deletionSuccess: "Réception supprimée avec succès",
+            deletionError: "Erreur lors de la suppression de la réception."
         },
         sale: {
             creationError: "Erreur lors de la création de la vente.",
@@ -200,13 +200,13 @@ createError: 'الرمز غير صالح أو منتهي الصلاحية',
             deletionError: "خطأ أثناء حذف المنتج."
         },
         reception: {
-          fetchError: 'خطأ أثناء جلب الاستلامات',
-          createError: 'خطأ أثناء إنشاء الاستلام',
-          updateError: 'خطأ أثناء تحديث الاستلام',
-          deleteError: 'خطأ أثناء حذف الاستلام',
-          adminAccess: 'الوصول مرفوض: يمكن للمسؤول فقط تعديل الاستلام.',
-          adminDelete: 'الوصول مرفوض: يمكن للمسؤول فقط حذف الاستلام.',
-          successDelete: 'تم حذف الاستلام بنجاح',
+            creationError: "خطأ أثناء إنشاء الاستلام.",
+            fetchAllError: "خطأ أثناء استرجاع الاستلامات.",
+            notFound: "لم يتم العثور على الاستلام",
+            fetchError: "خطأ أثناء استرجاع الاستلام.",
+            updateError: "خطأ أثناء تحديث الاستلام.",
+            deletionSuccess: "تم حذف الاستلام بنجاح",
+            deletionError: "خطأ أثناء حذف الاستلام."
         },
         sale: {
             creationError: "خطأ أثناء إنشاء البيع.",
