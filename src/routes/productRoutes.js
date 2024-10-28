@@ -1,4 +1,5 @@
 import express from 'express';
+import { authenticateToken,authorizeRole } from '../middlewares/authMiddleware.js';
 import {
   createProduct,
   getAllProducts,
@@ -11,10 +12,10 @@ import { addProductValidator,getProductByIdValidator,updateProductValidator,dele
 const productRoute = express.Router();
 
 // Routes pour gérer les produits
-productRoute.post('/product',addProductValidator, createProduct);
-productRoute.get('/products', getAllProducts);
-productRoute.get('/product/:id',getProductByIdValidator, getProductById);
-productRoute.put('/product/:id',updateProductValidator, updateProduct);
-productRoute.delete('/product/:id',deleteProductValidator, deleteProduct);
+productRoute.post('/product', authenticateToken, addProductValidator, createProduct);
+productRoute.get('/products', authenticateToken, getAllProducts);
+productRoute.get('/product/:id',authenticateToken, getProductByIdValidator, getProductById);
+productRoute.put('/product/:id',authenticateToken, updateProductValidator, updateProduct);
+productRoute.delete('/product/:id',authenticateToken, authorizeRole, deleteProductValidator, deleteProduct);
 
 export default productRoute;
