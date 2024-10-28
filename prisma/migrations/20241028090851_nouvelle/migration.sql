@@ -112,7 +112,7 @@ CREATE TABLE "suppliers" (
 -- CreateTable
 CREATE TABLE "batches" (
     "id" SERIAL NOT NULL,
-    "batch_number" TEXT NOT NULL,
+    "number" TEXT NOT NULL,
     "quantity" INTEGER NOT NULL,
     "expiration_date" TIMESTAMP(3) NOT NULL,
     "productId" INTEGER NOT NULL,
@@ -137,7 +137,6 @@ CREATE TABLE "stockMovements" (
     "quantity" INTEGER NOT NULL,
     "movement_date" TIMESTAMP(3) NOT NULL,
     "type" TEXT NOT NULL,
-    "entity" TEXT NOT NULL,
     "productId" INTEGER NOT NULL,
     "userId" INTEGER,
 

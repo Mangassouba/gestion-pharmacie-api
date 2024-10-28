@@ -119,7 +119,7 @@ model suppliers {
 
 model batches {
   id              Int      @id @default(autoincrement())
-  batch_number    String
+  number    String
   quantity        Int
   expiration_date DateTime
   productId       Int
@@ -141,7 +141,6 @@ model stockMovements {
   quantity      Int
   movement_date DateTime
   type          String
-  entity        String
   productId     Int
   userId        Int?
   product       products @relation(fields: [productId], references: [id])

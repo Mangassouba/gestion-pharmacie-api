@@ -38,7 +38,7 @@ export const createReception = async (req, res) => {
           data: { stock: { increment: detail.quantity } },
         });
 
-        await logStockMovement(detail.productId, detail.quantity, 'reception');
+        await logStockMovement(detail.productId, detail.quantity,'reception');
       })
     );
 
