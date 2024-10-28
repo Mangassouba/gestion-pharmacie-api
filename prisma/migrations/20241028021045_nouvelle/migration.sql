@@ -20,6 +20,8 @@ CREATE TABLE "products" (
     "purchase_price" INTEGER NOT NULL,
     "threshold" INTEGER NOT NULL,
     "prescription_req" BOOLEAN NOT NULL,
+    "barcode" TEXT NOT NULL,
+    "userId" INTEGER,
 
     CONSTRAINT "products_pkey" PRIMARY KEY ("id")
 );
@@ -27,9 +29,8 @@ CREATE TABLE "products" (
 -- CreateTable
 CREATE TABLE "sales" (
     "id" SERIAL NOT NULL,
-    "sold_products" TEXT NOT NULL,
     "sale_date" TIMESTAMP(3) NOT NULL,
-    "userId" INTEGER NOT NULL,
+    "userId" INTEGER,
 
     CONSTRAINT "sales_pkey" PRIMARY KEY ("id")
 );
@@ -46,14 +47,14 @@ CREATE TABLE "saleDetails" (
 );
 
 -- CreateTable
-CREATE TABLE "clients" (
+CREATE TABLE "customers" (
     "id" SERIAL NOT NULL,
     "address" TEXT NOT NULL,
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
     "phone" TEXT NOT NULL,
 
-    CONSTRAINT "clients_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "customers_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -61,7 +62,7 @@ CREATE TABLE "orders" (
     "id" SERIAL NOT NULL,
     "order_date" TIMESTAMP(3) NOT NULL,
     "clientId" INTEGER NOT NULL,
-    "userId" INTEGER NOT NULL,
+    "userId" INTEGER,
 
     CONSTRAINT "orders_pkey" PRIMARY KEY ("id")
 );
@@ -80,11 +81,8 @@ CREATE TABLE "orderDetails" (
 -- CreateTable
 CREATE TABLE "receptions" (
     "id" SERIAL NOT NULL,
-    "delivery_date" TIMESTAMP(3) NOT NULL,
-    "order_date" TIMESTAMP(3) NOT NULL,
-    "ordered_products" TEXT NOT NULL,
-    "status" TEXT NOT NULL,
-    "userId" INTEGER NOT NULL,
+    "reception_date" TIMESTAMP(3) NOT NULL,
+    "userId" INTEGER,
 
     CONSTRAINT "receptions_pkey" PRIMARY KEY ("id")
 );
@@ -93,6 +91,7 @@ CREATE TABLE "receptions" (
 CREATE TABLE "receptionDetails" (
     "id" SERIAL NOT NULL,
     "quantity" INTEGER NOT NULL,
+    "price" INTEGER NOT NULL,
     "productId" INTEGER NOT NULL,
     "receptionId" INTEGER NOT NULL,
 
@@ -105,7 +104,7 @@ CREATE TABLE "suppliers" (
     "name" TEXT NOT NULL,
     "address" TEXT NOT NULL,
     "contact" TEXT NOT NULL,
-    "products" TEXT NOT NULL,
+    "userId" INTEGER,
 
     CONSTRAINT "suppliers_pkey" PRIMARY KEY ("id")
 );
@@ -127,6 +126,7 @@ CREATE TABLE "inventories" (
     "inventory_date" TIMESTAMP(3) NOT NULL,
     "stock" INTEGER NOT NULL,
     "productId" INTEGER NOT NULL,
+    "userId" INTEGER,
 
     CONSTRAINT "inventories_pkey" PRIMARY KEY ("id")
 );
@@ -137,7 +137,9 @@ CREATE TABLE "stockMovements" (
     "quantity" INTEGER NOT NULL,
     "movement_date" TIMESTAMP(3) NOT NULL,
     "type" TEXT NOT NULL,
+    "entity" TEXT NOT NULL,
     "productId" INTEGER NOT NULL,
+    "userId" INTEGER,
 
     CONSTRAINT "stockMovements_pkey" PRIMARY KEY ("id")
 );
@@ -146,7 +148,10 @@ CREATE TABLE "stockMovements" (
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- AddForeignKey
-ALTER TABLE "sales" ADD CONSTRAINT "sales_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "products" ADD CONSTRAINT "products_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "sales" ADD CONSTRAINT "sales_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "saleDetails" ADD CONSTRAINT "saleDetails_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -155,10 +160,10 @@ ALTER TABLE "saleDetails" ADD CONSTRAINT "saleDetails_productId_fkey" FOREIGN KE
 ALTER TABLE "saleDetails" ADD CONSTRAINT "saleDetails_saleId_fkey" FOREIGN KEY ("saleId") REFERENCES "sales"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "orders" ADD CONSTRAINT "orders_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "clients"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "orders" ADD CONSTRAINT "orders_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "customers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "orders" ADD CONSTRAINT "orders_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "orders" ADD CONSTRAINT "orders_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "orderDetails" ADD CONSTRAINT "orderDetails_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "orders"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -167,7 +172,7 @@ ALTER TABLE "orderDetails" ADD CONSTRAINT "orderDetails_orderId_fkey" FOREIGN KE
 ALTER TABLE "orderDetails" ADD CONSTRAINT "orderDetails_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "receptions" ADD CONSTRAINT "receptions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "receptions" ADD CONSTRAINT "receptions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "receptionDetails" ADD CONSTRAINT "receptionDetails_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -176,10 +181,19 @@ ALTER TABLE "receptionDetails" ADD CONSTRAINT "receptionDetails_productId_fkey" 
 ALTER TABLE "receptionDetails" ADD CONSTRAINT "receptionDetails_receptionId_fkey" FOREIGN KEY ("receptionId") REFERENCES "receptions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "suppliers" ADD CONSTRAINT "suppliers_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "batches" ADD CONSTRAINT "batches_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "inventories" ADD CONSTRAINT "inventories_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "inventories" ADD CONSTRAINT "inventories_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "stockMovements" ADD CONSTRAINT "stockMovements_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "stockMovements" ADD CONSTRAINT "stockMovements_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
