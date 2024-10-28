@@ -12,13 +12,14 @@ import {
   getByIdValidator,
   deleteValidator,
 } from "../validators/stockMovementsValidator.js";
+import { authenticateToken,authorizeRole } from '../middlewares/authMiddleware.js';
 
 const movementRouter = express.Router();
 
-movementRouter.post("/movements", createStockMovementValidator, createStockMovement);
-movementRouter.get("/movements", getStockMovements);
-movementRouter.get("/movements/:id", getByIdValidator, getStockMovementById);
-movementRouter.put("/movements/:id", updateStockMovementValidator, updateStockMovement);
-movementRouter.delete("/movements/:id", deleteValidator, deleteStockMovement);
+movementRouter.post("/movements", authenticateToken, createStockMovementValidator, createStockMovement);
+movementRouter.get("/movements", authenticateToken, getStockMovements);
+movementRouter.get("/movements/:id", authenticateToken, getByIdValidator, getStockMovementById);
+movementRouter.put("/movements/:id", authenticateToken, updateStockMovementValidator, updateStockMovement);
+movementRouter.delete("/movements/:id", authenticateToken, authorizeRole, deleteValidator, deleteStockMovement);
 
 export default movementRouter;
