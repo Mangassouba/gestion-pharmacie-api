@@ -12,13 +12,14 @@ import {
   updateInventoryValidator,
   deleteInventoryValidator
 } from "../validators/inventoryValidators.js";
+import { authenticateToken,authorizeRole } from '../middlewares/authMiddleware.js';
 
 const iventoryRouter = express.Router();
 
-iventoryRouter.post("/inventories", createInventoryValidator, createInventory);
-iventoryRouter.get("/inventories", getInventories);
-iventoryRouter.get("/inventories/:id", getInventoryByIdValidator, getInventoryById);
-iventoryRouter.put("/inventories/:id", updateInventoryValidator, updateInventory);
-iventoryRouter.delete("/inventories/:id", deleteInventoryValidator, deleteInventory);
+iventoryRouter.post("/inventories", authenticateToken, createInventoryValidator, createInventory);
+iventoryRouter.get("/inventories", authenticateToken, getInventories);
+iventoryRouter.get("/inventories/:id", authenticateToken, getInventoryByIdValidator, getInventoryById);
+iventoryRouter.put("/inventories/:id", authenticateToken, updateInventoryValidator, updateInventory);
+iventoryRouter.delete("/inventories/:id", authenticateToken, authorizeRole, deleteInventoryValidator, deleteInventory);
 
 export default iventoryRouter;
