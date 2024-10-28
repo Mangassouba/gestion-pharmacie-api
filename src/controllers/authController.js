@@ -1,9 +1,8 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import prisma from '../config/prisma.js'; // Prisma client connected to the database
+import prisma from '../config/prisma.js'; 
 import i18next from '../i18n.js';
 
-// JWT token generation function
 const generateAccessToken = (user) => {
   return jwt.sign(
     { userId: user.id, role: user.role },
@@ -12,7 +11,6 @@ const generateAccessToken = (user) => {
   );
 };
 
-// Optional refresh token generation function
 const generateRefreshToken = (user) => {
   return jwt.sign(
     { userId: user.id },
@@ -21,11 +19,11 @@ const generateRefreshToken = (user) => {
   );
 };
 
-// --- Register Route ---
+
 export const register = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
-    const validRoles = ['ADMIN', 'EMPLOYE'];
+    const validRoles = ['ADMIN', 'CAISSIER'];
 
     if (!validRoles.includes(role)) {
       return res.status(400).json({ message: i18next.t('auth.accessForbidden') });
@@ -51,7 +49,7 @@ export const register = async (req, res) => {
   }
 };
 
-// --- Login Route ---
+
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -71,7 +69,7 @@ export const login = async (req, res) => {
     }
 
     const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user); // Optional
+    const refreshToken = generateRefreshToken(user); 
 
     res.json({
       message: i18next.t('auth.loginSuccess'),
@@ -84,7 +82,6 @@ export const login = async (req, res) => {
   }
 };
 
-// Middleware to check authentication
 export const authenticateToken = (req, res, next) => {
   const token = req.headers['authorization'];
   if (!token) {

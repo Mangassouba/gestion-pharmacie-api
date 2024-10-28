@@ -21,6 +21,13 @@ model users {
   suppliers  suppliers[]
   inventories  inventories[]
   stockMovements stockMovements[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  CAISSIER
 }
 
 model products {

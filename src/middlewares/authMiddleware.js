@@ -1,13 +1,13 @@
 import jwt from 'jsonwebtoken';
 
 export const authenticateToken = (req, res, next) => {
-  const authHeader = req.header('Authorization'); // Récupère l'en-tête d'autorisation
+  const authHeader = req.header('Authorization'); 
 
   if (!authHeader) {
     return res.status(401).json({ message: 'Access denied. No token provided.' });
   }
 
-  const token = authHeader.split(' ')[1]; // Récupère le token
+  const token = authHeader.split(' ')[1]; 
 
   if (!token) {
     return res.status(401).json({ message: 'Access denied. No token provided.' });
@@ -15,19 +15,20 @@ export const authenticateToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Ajoute les données décodées à l'objet req
-    next(); // Passe au middleware suivant
+    req.user = decoded; 
+    next(); 
   } catch (error) {
     console.error('Token verification failed:', error);
     res.status(401).json({ message: 'Invalid token.' });
   }
 };
 
-// Middleware pour vérifier le rôle
+
 export const authorizeRole = (...roles) => {
   return (req, res, next) => {
     if (!req.user || !roles.includes(req.user.role)) {
-      return res.status(403).json({ message: 'Access denied. Insufficient permissions.' });
+      const message = i18next.t('auth.accessDenied');
+      return res.status(403).json({ message });
     }
     next();
   };

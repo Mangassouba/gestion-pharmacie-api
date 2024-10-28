@@ -11,11 +11,10 @@ import { addProductValidator,getProductByIdValidator,updateProductValidator,dele
 
 const productRoute = express.Router();
 
-// Routes pour gérer les produits
 productRoute.post('/product', authenticateToken, addProductValidator, createProduct);
 productRoute.get('/products', authenticateToken, getAllProducts);
 productRoute.get('/product/:id',authenticateToken, getProductByIdValidator, getProductById);
 productRoute.put('/product/:id',authenticateToken, updateProductValidator, updateProduct);
-productRoute.delete('/product/:id',authenticateToken, authorizeRole, deleteProductValidator, deleteProduct);
+productRoute.delete('/product/:id',authenticateToken, authorizeRole('ADMIN'), deleteProductValidator, deleteProduct);
 
 export default productRoute;
