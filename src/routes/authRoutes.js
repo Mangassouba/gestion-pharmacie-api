@@ -1,15 +1,16 @@
-import express from 'express';
-import { login } from '../controllers/authController.js';
-import { verifyToken } from '../middlewares/authMiddleware.js';
+import express from "express";
+import { login, register } from "../controllers/authController.js";
+// import { register, login } from "../middlewares/authMiddleware.js";
+// import {
+//   registerValidator,
+//   loginValidator,
+// } from "../validators/authValidator.js";
 
 const authRouter = express.Router();
 
-// Login route
-authRouter.post('/login', login);
-
-// Example of a protected route
-authRouter.get('/protected', verifyToken, (req, res) => {
-  res.status(200).json({ message: 'Access granted to protected route', user: req.user });
-});
+// Routes d'authentification
+authRouter.post("/register",  register);
+authRouter.post("/login",  login);
 
 export default authRouter;
+

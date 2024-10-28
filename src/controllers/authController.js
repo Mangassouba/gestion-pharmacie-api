@@ -1,61 +1,102 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import prisma from '../config/prisma.js';
+import prisma from '../config/prisma.js'; // Prisma client connected to the database
 import i18next from '../i18n.js';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
+// JWT token generation function
+const generateAccessToken = (user) => {
+  return jwt.sign(
+    { userId: user.id, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: '1h' }
+  );
+};
 
-export const login = async (req, res) => {
-  const { email, password } = req.body;
+// Optional refresh token generation function
+const generateRefreshToken = (user) => {
+  return jwt.sign(
+    { userId: user.id },
+    process.env.JWT_REFRESH_SECRET,
+    { expiresIn: '7d' }
+  );
+};
 
+// --- Register Route ---
+export const register = async (req, res) => {
   try {
-    const user = await prisma.users.findUnique({
-      where: { email },
+    const { name, email, password, role } = req.body;
+    const validRoles = ['ADMIN', 'EMPLOYE'];
+
+    if (!validRoles.includes(role)) {
+      return res.status(400).json({ message: i18next.t('auth.accessForbidden') });
+    }
+
+    const existingUser = await prisma.users.findUnique({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ message: i18next.t('auth.userNotFound') });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = await prisma.users.create({
+      data: { name, email, password: hashedPassword, role }
     });
-    if (!user) {
-      return res.status(404).json({ message: i18next.t('auth.userNotFound') });
-    }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: i18next.t('auth.incorrectPassword') });
-    }
-
-    const token = jwt.sign(
-      { id: user.id, role: user.role, status: user.status },
-      JWT_SECRET,
-      { expiresIn: '1h' }
-    );
-
-    res.status(200).json({ message: i18next.t('auth.loginSuccess'), token });
+    res.status(201).json({
+      message: i18next.t('auth.loginSuccess'),
+      user: { id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role }
+    });
   } catch (error) {
+    console.error('Error during registration:', error);
     res.status(500).json({ message: i18next.t('auth.loginError'), error });
   }
 };
 
-export const verifyToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-
-  if (!authHeader) {
-    return res.status(403).json({ message: i18next.t('auth.accessForbidden') });
-  }
-
+// --- Login Route ---
+export const login = async (req, res) => {
   try {
-    const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const { email, password } = req.body;
+    const user = await prisma.users.findUnique({ where: { email } });
 
-    req.user = {
-      id: decoded.id,
-      role: decoded.role,
-      status: decoded.status,
-    };
+    if (!user) {
+      return res.status(400).json({ message: i18next.t('auth.userNotFound') });
+    }
 
-    if (req.user.status !== 'active') {
+    if (user.status !== 'ACTIVE') {
       return res.status(403).json({ message: i18next.t('auth.userInactive') });
     }
 
-    next();
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: i18next.t('auth.incorrectPassword') });
+    }
+
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user); // Optional
+
+    res.json({
+      message: i18next.t('auth.loginSuccess'),
+      accessToken,
+      refreshToken
+    });
   } catch (error) {
-    return res.status(401).json({ message: i18next.t('auth.invalidToken') });
+    console.error('Error during login:', error);
+    res.status(500).json({ message: i18next.t('auth.loginError'), error });
   }
 };
+
+// Middleware to check authentication
+export const authenticateToken = (req, res, next) => {
+  const token = req.headers['authorization'];
+  if (!token) {
+    return res.status(403).json({ message: i18next.t('auth.accessForbidden') });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).json({ message: i18next.t('auth.invalidToken') });
+    }
+    req.user = user;
+    next();
+  });
+};
+
