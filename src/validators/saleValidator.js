@@ -9,15 +9,15 @@ const addSaleValidator = [
     .withMessage("Sale date is required.")
     .isISO8601()
     .withMessage("Sale date must be a valid date format."),
-  check("userId")
-    .not()
-    .isEmpty()
-    .withMessage("User ID is required.")
-    .bail()
-    .custom(async (userId) => {
-      const user = await prisma.users.findUnique({ where: { id: userId } });
-      if (!user) throw new Error("User not found.");
-    }),
+//   check("userId")
+//     .not()
+//     .isEmpty()
+//     .withMessage("User ID is required.")
+//     .bail()
+//     .custom(async (userId) => {
+//       const user = await prisma.users.findUnique({ where: { id: userId } });
+//       if (!user) throw new Error("User not found.");
+//     }),
   check("details")
     .isArray({ min: 1 })
     .withMessage("At least one detail is required.")

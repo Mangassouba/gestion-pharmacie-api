@@ -1,4 +1,5 @@
-import prisma from "../config/prisma.js";
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 import { StatusCodes } from "http-status-codes";
 
 const logStockMovement = async (productId, quantity, type) => {
@@ -14,44 +15,42 @@ const logStockMovement = async (productId, quantity, type) => {
 
 export const createInventory = async (req, res) => {
     const { inventory_date, stock, productId } = req.body;
-  
+    const userId = req.user.userId;
+console.log(userId);
+
     try {
-      // Vérifier si le produit existe
-      const product = await prisma.products.findUnique({
-        where: { id: productId },
-      });
-  
-      if (!product) {
-        return res.status(404).json({ error: 'Product not found' });
-      }
-  
-      // Créer un nouvel inventaire
-      const newInventory = await prisma.inventories.create({
-        data: {
-          inventory_date: new Date(inventory_date),
-          stock,
-          productId,
-        },
-      });
-  
-      // Calculer la différence de stock
-      const quantityChange = stock - product.stock;
-  
-      // Mettre à jour le stock du produit
-      await prisma.products.update({
-        where: { id: productId },
-        data: { stock: stock },
-      });
-  
-      // Enregistrer le mouvement de stock
-      await logStockMovement(productId, quantityChange, 'inventory creation');
-  
-      res.status(StatusCodes.CREATED).json(newInventory);
+        const product = await prisma.products.findUnique({
+            where: { id: productId },
+        });
+
+        if (!product) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        const newInventory = await prisma.inventories.create({
+            data: {
+                inventory_date: new Date(inventory_date),
+                stock,
+                productId,
+                userId,
+            },
+        });
+
+        const quantityChange = stock - product.stock;
+
+        await prisma.products.update({
+            where: { id: productId },
+            data: { stock: stock },
+        });
+
+        await logStockMovement(productId, quantityChange, 'inventory creation', userId);
+
+        res.status(StatusCodes.CREATED).json(newInventory);
     } catch (error) {
-      console.error('Error creating inventory:', error);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Error while creating inventory.' });
+        console.error('Error creating inventory:', error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Error while creating inventory.' });
     }
-  };
+};
 
 export const getInventories = async (req, res) => {
   try {
@@ -87,41 +86,43 @@ export const getInventoryById = async (req, res) => {
 export const updateInventory = async (req, res) => {
     const { id } = req.params;
     const { stock } = req.body;
-  
+    const userId = req.user.userId;
+
     try {
-      const existingInventory = await prisma.inventories.findUnique({
-        where: { id: parseInt(id) },
-      });
-  
-      if (!existingInventory) {
-        return res.status(404).json({ error: 'Inventory not found' });
-      }
-  
-      const product = await prisma.products.findUnique({
-        where: { id: existingInventory.productId },
-      });
-  
-      // Update the inventory
-      const updatedInventory = await prisma.inventories.update({
-        where: { id: parseInt(id) },
-        data: { stock },
-      });
-  
-      // Log the stock movement based on the new inventory level
-      const quantityChange = stock - product.stock; // Calculate stock change
-      await prisma.products.update({
-        where: { id: existingInventory.productId },
-        data: { stock: stock }, // Update stock in products
-      });
-  
-      await logStockMovement(existingInventory.productId, quantityChange, 'inventory update');
-  
-      res.status(StatusCodes.OK).json(updatedInventory);
+        const existingInventory = await prisma.inventories.findUnique({
+            where: { id: parseInt(id) },
+        });
+
+        if (!existingInventory) {
+            return res.status(404).json({ error: 'Inventory not found' });
+        }
+
+        const product = await prisma.products.findUnique({
+            where: { id: existingInventory.productId },
+        });
+
+        const updatedInventory = await prisma.inventories.update({
+            where: { id: parseInt(id) },
+            data: {
+                stock,
+                updatedBy: userId, 
+            },
+        });
+
+        const quantityChange = stock - product.stock;
+        await prisma.products.update({
+            where: { id: existingInventory.productId },
+            data: { stock: stock }, 
+        });
+
+        await logStockMovement(existingInventory.productId, quantityChange, 'inventory update', userId);
+
+        res.status(StatusCodes.OK).json(updatedInventory);
     } catch (error) {
-      console.error('Error updating inventory:', error);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Error while updating inventory.' });
+        console.error('Error updating inventory:', error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Error while updating inventory.' });
     }
-  };
+};
   
 
 export const deleteInventory = async (req, res) => {

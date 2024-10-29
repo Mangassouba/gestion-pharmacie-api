@@ -1,16 +1,21 @@
-import prisma from "../config/prisma.js";
+import { PrismaClient } from '@prisma/client';
+// import i18next from '../i18n.js'; 
+const prisma = new PrismaClient();
 import { StatusCodes } from "http-status-codes";
 
 // Create a new batch
 export const createBatch = async (req, res) => {
+  const userId = req.user.id; 
+  const { number, quantity, expiration_date, productId } = req.body;
+
   try {
-    const { batch_number, quantity, expiration_date, productId } = req.body;
     const newBatch = await prisma.batches.create({
       data: {
-        batch_number,
+        number,
         quantity,
         expiration_date: new Date(expiration_date),
         productId,
+        userId, 
       },
     });
     res.status(StatusCodes.CREATED).json(newBatch);
@@ -20,7 +25,7 @@ export const createBatch = async (req, res) => {
   }
 };
 
-// Get all batches
+
 export const getBatches = async (req, res) => {
   try {
     const batches = await prisma.batches.findMany({
@@ -33,7 +38,7 @@ export const getBatches = async (req, res) => {
   }
 };
 
-// Get a batch by ID
+
 export const getBatchById = async (req, res) => {
   const { id } = req.params;
   try {
@@ -51,19 +56,23 @@ export const getBatchById = async (req, res) => {
   }
 };
 
-// Update a batch
+
 export const updateBatch = async (req, res) => {
+  const userId = req.user.id;
+  console.log(userId);
+   
   const { id } = req.params;
-  const { batch_number, quantity, expiration_date, productId } = req.body;
+  const { number, quantity, expiration_date, productId } = req.body;
 
   try {
     const updatedBatch = await prisma.batches.update({
       where: { id: Number(id) },
       data: {
-        batch_number,
+        number,
         quantity,
         expiration_date: new Date(expiration_date),
         productId,
+        userId,
       },
     });
     res.status(StatusCodes.OK).json(updatedBatch);
@@ -73,13 +82,20 @@ export const updateBatch = async (req, res) => {
   }
 };
 
-// Delete a batch
 export const deleteBatch = async (req, res) => {
+  const userId = req.user.id;
   const { id } = req.params;
+
   try {
+    await prisma.batches.update({
+      where: { id: Number(id) },
+      data: { deletedBy: userId },
+    });
+
     await prisma.batches.delete({
       where: { id: Number(id) },
     });
+
     res.status(StatusCodes.OK).json({ message: "Batch successfully deleted" });
   } catch (error) {
     console.error(error);

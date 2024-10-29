@@ -3,6 +3,7 @@ import i18next from "../i18n.js";
 
 export const createProduct = async (req, res) => {
   const { name, description, stock, sale_price, purchase_price, threshold, prescription_req, barcode } = req.body;
+  const userId = req.user.userId;
 
   try {
     const newProduct = await prisma.products.create({
@@ -15,10 +16,11 @@ export const createProduct = async (req, res) => {
         threshold,
         prescription_req,
         barcode,
+        userId 
       },
     });
 
-    res.status(201).json(newProduct); 
+    res.status(201).json(newProduct);
   } catch (error) {
     console.error("Error creating product:", error);
     res.status(500).json({ error: i18next.t('product.creationError') });
@@ -57,6 +59,7 @@ export const getProductById = async (req, res) => {
 export const updateProduct = async (req, res) => {
   const { id } = req.params;
   const { name, description, stock, sale_price, purchase_price, threshold, prescription_req, barcode } = req.body;
+  const userId = req.user.userId;
 
   try {
     const existingProduct = await prisma.products.findUnique({
@@ -77,7 +80,8 @@ export const updateProduct = async (req, res) => {
         purchase_price,
         threshold,
         prescription_req,
-        barcode, // Ajout du champ barcode
+        barcode,
+        userId 
       },
     });
 
@@ -90,6 +94,7 @@ export const updateProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
   const { id } = req.params;
+  const userId = req.user.userId;
 
   try {
     const existingProduct = await prisma.products.findUnique({

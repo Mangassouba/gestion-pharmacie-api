@@ -14,7 +14,8 @@ const logStockMovement = async (productId, quantity, type) => {
 };
 
 export const createSale = async (req, res) => {
-    const { sale_date, userId, details } = req.body;
+    const { sale_date, details } = req.body;
+    const userId = req.user.userId;
 
     try {
         for (const detail of details) {
@@ -58,6 +59,7 @@ export const createSale = async (req, res) => {
     }
 };
 
+
 export const getSales = async (req, res) => {
     try {
         const sales = await prisma.sales.findMany({
@@ -89,22 +91,37 @@ export const getSaleById = async (req, res) => {
 
 export const updateSale = async (req, res) => {
     const { id } = req.params;
-    const { sale_date, userId, details } = req.body;
+    const { sale_date, details } = req.body;
+    const userId = req.user.userId; 
 
     try {
         const saleExists = await prisma.sales.findUnique({
             where: { id: Number(id) },
+            include: { details: true },
         });
+
         if (!saleExists) {
             return res.status(StatusCodes.NOT_FOUND).json({ error: i18next.t('sale.notFound') });
         }
 
-        if (userId) {
-            const userExists = await prisma.users.findUnique({ where: { id: userId } });
-            if (!userExists) {
-                return res.status(StatusCodes.BAD_REQUEST).json({ error: i18next.t('user.notFound') });
-            }
-        }
+        
+        await Promise.all(
+            saleExists.details.map(async (existingDetail) => {
+                const newDetail = details.find(d => d.productId === existingDetail.productId);
+                if (newDetail) {
+                    const quantityDifference = existingDetail.quantity - newDetail.quantity;
+
+                    await prisma.products.update({
+                        where: { id: existingDetail.productId },
+                        data: { stock: { increment: quantityDifference } },
+                    });
+
+                    if (quantityDifference !== 0) {
+                        await logStockMovement(existingDetail.productId, -quantityDifference, 'sale update');
+                    }
+                }
+            })
+        );
 
         const updatedSale = await prisma.$transaction(async (prisma) => {
             await prisma.saleDetails.deleteMany({
@@ -133,6 +150,7 @@ export const updateSale = async (req, res) => {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: i18next.t('sale.updateError') });
     }
 };
+
 
 export const deleteSale = async (req, res) => {
     const { id } = req.params;

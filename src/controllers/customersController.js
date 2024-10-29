@@ -3,10 +3,17 @@ import i18next from '../i18n.js';
 
 export const createClient = async (req, res) => {
   const { address, firstName, lastName, phone } = req.body;
+  const userId = req.user.id;
 
   try {
     const newClient = await prisma.customers.create({
-      data: { address, firstName, lastName, phone },
+      data: {
+        address,
+        firstName,
+        lastName,
+        phone,
+        userId,
+      },
     });
     res.status(201).json(newClient);
   } catch (error) {
