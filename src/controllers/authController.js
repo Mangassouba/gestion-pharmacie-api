@@ -70,6 +70,7 @@ export const login = async (req, res) => {
 
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user); 
+console.log(accessToken);
 
     res.json({
       message: i18next.t('auth.loginSuccess'),

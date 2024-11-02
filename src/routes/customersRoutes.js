@@ -15,6 +15,6 @@ clientRouter.post('/customers', authenticateToken, createClientValidator, create
 clientRouter.get('/customers', authenticateToken, getAllClients);
 clientRouter.get('/customers/:id', authenticateToken, getClientByIdValidator, getClientById);
 clientRouter.put('/customers/:id', authenticateToken, updateClientValidator, updateClient);
-clientRouter.delete('/customers/:id', authenticateToken, authorizeRole, deleteClientValidator, deleteClient);
+clientRouter.delete('/customers/:id', authenticateToken, authorizeRole('ADMIN'), deleteClientValidator, deleteClient);
 
 export default clientRouter;

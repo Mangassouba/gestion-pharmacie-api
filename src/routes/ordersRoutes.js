@@ -11,6 +11,6 @@ ordersRouter.post('/orders', authenticateToken, createOrderValidator, createOrde
 ordersRouter.get('/orders', authenticateToken, getOrders);
 ordersRouter.get('/orders', authenticateToken, getOrderByIdValidator, getOrderById);
 ordersRouter.put('/orders/:id', authenticateToken, updateOrderValidator, updateOrder);
-ordersRouter.delete('/orders/:id', authenticateToken, authorizeRole, deleteOrderValidator, deleteOrder);
+ordersRouter.delete('/orders/:id', authenticateToken, authorizeRole('ADMIN'), deleteOrderValidator, deleteOrder);
 
 export default ordersRouter;

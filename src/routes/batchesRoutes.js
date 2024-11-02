@@ -15,6 +15,6 @@ batcheRrouter.post("/batches", authenticateToken, batchValidator,  createBatch);
 batcheRrouter.get("/batches", authenticateToken, getBatches);
 batcheRrouter.get("/batches/:id", authenticateToken, batchIdValidator, getBatchById);
 batcheRrouter.put("/batches/:id", authenticateToken, batchupdateValidator,  updateBatch);
-batcheRrouter.delete("/batches/:id", authenticateToken, authorizeRole, deleteBatchValidator, deleteBatch);
+batcheRrouter.delete("/batches/:id", authenticateToken, authorizeRole('ADMIN'), deleteBatchValidator, deleteBatch);
 
 export default batcheRrouter;

@@ -20,6 +20,6 @@ movementRouter.post("/movements", authenticateToken, createStockMovementValidato
 movementRouter.get("/movements", authenticateToken, getStockMovements);
 movementRouter.get("/movements/:id", authenticateToken, getByIdValidator, getStockMovementById);
 movementRouter.put("/movements/:id", authenticateToken, updateStockMovementValidator, updateStockMovement);
-movementRouter.delete("/movements/:id", authenticateToken, authorizeRole, deleteValidator, deleteStockMovement);
+movementRouter.delete("/movements/:id", authenticateToken, authorizeRole('ADMIN'), deleteValidator, deleteStockMovement);
 
 export default movementRouter;

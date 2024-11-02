@@ -20,6 +20,6 @@ iventoryRouter.post("/inventories", authenticateToken, createInventoryValidator,
 iventoryRouter.get("/inventories", authenticateToken, getInventories);
 iventoryRouter.get("/inventories/:id", authenticateToken, getInventoryByIdValidator, getInventoryById);
 iventoryRouter.put("/inventories/:id", authenticateToken, updateInventoryValidator, updateInventory);
-iventoryRouter.delete("/inventories/:id", authenticateToken, authorizeRole, deleteInventoryValidator, deleteInventory);
+iventoryRouter.delete("/inventories/:id", authenticateToken, authorizeRole('ADMIN'), deleteInventoryValidator, deleteInventory);
 
 export default iventoryRouter;

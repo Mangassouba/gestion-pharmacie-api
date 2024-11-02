@@ -20,6 +20,6 @@ supplierRouter.post('/suppliers', authenticateToken, createSupplierValidator, cr
 supplierRouter.get('/suppliers', authenticateToken, getAllSuppliers);
 supplierRouter.get('/suppliers/:id', authenticateToken, getSupplierByIdValidator, getSupplierById);
 supplierRouter.put('/suppliers/:id', authenticateToken, updateSupplierValidator, updateSupplier);
-supplierRouter.delete('/suppliers/:id', authenticateToken, authorizeRole, deleteSupplierValidator, deleteSupplier);
+supplierRouter.delete('/suppliers/:id', authenticateToken, authorizeRole('ADMIN'), deleteSupplierValidator, deleteSupplier);
 
 export default supplierRouter;

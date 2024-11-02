@@ -105,7 +105,7 @@ export const updateInventory = async (req, res) => {
             where: { id: parseInt(id) },
             data: {
                 stock,
-                updatedBy: userId, 
+                userId, 
             },
         });
 

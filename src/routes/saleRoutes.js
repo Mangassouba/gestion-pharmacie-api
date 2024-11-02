@@ -9,6 +9,6 @@ saleRouter.post("/sale", authenticateToken, addSaleValidator,  createSale);
 saleRouter.get("/sale", authenticateToken, getSales);
 saleRouter.get("/sale/:id", authenticateToken, getSaleByIdValidator,  getSaleById);
 saleRouter.put("/sale/:id", authenticateToken, updateSaleValidator, updateSale);
-saleRouter.delete("/sale/:id", authenticateToken, authorizeRole, deleteSaleValidator,  deleteSale);
+saleRouter.delete("/sale/:id", authenticateToken, authorizeRole('ADMIN'), deleteSaleValidator,  deleteSale);
 
 export default saleRouter;

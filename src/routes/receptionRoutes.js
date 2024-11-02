@@ -20,6 +20,6 @@ receptionsRouter.post("/receptions", authenticateToken, createReceptionValidator
 receptionsRouter.get("/receptions", authenticateToken, getReceptions);
 receptionsRouter.get("/receptions/:id", authenticateToken, getReceptionByIdValidator, getReceptionById);
 receptionsRouter.put("/receptions/:id", authenticateToken, updateReceptionValidator, updateReception);
-receptionsRouter.delete("/receptions/:id", authenticateToken, authorizeRole, deleteReceptionValidator, deleteReception);
+receptionsRouter.delete("/receptions/:id", authenticateToken, authorizeRole('ADMIN'), deleteReceptionValidator, deleteReception);
 
 export default receptionsRouter;

@@ -14,9 +14,16 @@ import receptionsRouter from './src/routes/receptionRoutes.js';
 import authRouter from './src/routes/authRoutes.js';
 // import prisma from './src/config/prisma';
 
-dotenv.config();
+
+const corsOptions = {
+  origin: "http://localhost:5173/",
+};
 
 const app = express();
+app.use(cors("*", corsOptions));
+dotenv.config();
+
+// const app = express();
 app.use(cors());
 app.use(express.json());
 
