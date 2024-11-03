@@ -5,10 +5,10 @@ const prisma = new PrismaClient();
 export const createOrder = async (req, res) => {
     const userId = req.user.userId;
     try {
-      const { order_date, clientId, detailsOrder } = req.body;
+      const { order_date, customerId, detailsOrder } = req.body;
   
       const customerExists = await prisma.customers.findUnique({
-        where: { id: clientId },
+        where: { id: customerId },
       });
   
       if (!customerExists) {
@@ -30,7 +30,7 @@ export const createOrder = async (req, res) => {
       const newOrder = await prisma.orders.create({
         data: {
           order_date,
-          clientId,
+          customerId,
           userId,
           details: {
             create: detailsOrder.map((detail) => ({
@@ -47,14 +47,14 @@ export const createOrder = async (req, res) => {
       console.error('Error creating order:', error);
       res.status(400).json({ error: i18next.t('order.creationError') });
     }
-  };
-  
-  export const getOrders = async (req, res) => {
+};
+
+export const getOrders = async (req, res) => {
     try {
       const orders = await prisma.orders.findMany({
         include: {
           details: true,
-          client: true,
+          customer: true,
         },
       });
       res.status(200).json(orders);
@@ -64,16 +64,16 @@ export const createOrder = async (req, res) => {
         error: i18next.t('order.fetchAllError', { message: error.message }),
       });
     }
-  };
-  
-  export const getOrderById = async (req, res) => {
+};
+
+export const getOrderById = async (req, res) => {
     const { id } = req.params;
     try {
       const order = await prisma.orders.findUnique({
         where: { id: Number(id) },
         include: {
           details: true,
-          client: true,
+          customer: true,
         },
       });
   
@@ -88,12 +88,12 @@ export const createOrder = async (req, res) => {
         error: i18next.t('order.fetchError', { message: error.message }),
       });
     }
-  };
-  
-  export const updateOrder = async (req, res) => {
+};
+
+export const updateOrder = async (req, res) => {
     const userId = req.user.userId;
     const { id } = req.params;
-    const { status, order_date, clientId, detailsOrder } = req.body;
+    const { status, order_date, customerId, detailsOrder } = req.body;
   
     try {
       const orderExists = await prisma.orders.findUnique({
@@ -106,7 +106,7 @@ export const createOrder = async (req, res) => {
       }
   
       const customerExists = await prisma.customers.findUnique({
-        where: { id: clientId },
+        where: { id: customerId },
       });
   
       if (!customerExists) {
@@ -130,7 +130,7 @@ export const createOrder = async (req, res) => {
         data: {
           status: status || orderExists.status,
           order_date,
-          client: { connect: { id: clientId } },
+          customer: { connect: { id: customerId } },
           user: { connect: { id: userId } },
           details: {
             deleteMany: {}, 
@@ -150,11 +150,9 @@ export const createOrder = async (req, res) => {
         error: i18next.t('order.updateError', { message: error.message }),
       });
     }
-  };
-  
-  
-  
-  export const deleteOrder = async (req, res) => {
+};
+
+export const deleteOrder = async (req, res) => {
     const userId = req.user.userId;
     const { id } = req.params;
   
@@ -178,4 +176,4 @@ export const createOrder = async (req, res) => {
         error: i18next.t('order.deletionError', { message: error.message }),
       });
     }
-  };
+};

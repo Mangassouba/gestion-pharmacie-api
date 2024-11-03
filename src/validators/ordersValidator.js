@@ -11,7 +11,7 @@ const createOrderValidator = [
     .isISO8601()
     .withMessage("Order date must be a valid ISO 8601 date format."),
   
-  body("clientId")
+  body("customerId")
     .not()
     .isEmpty()
     .withMessage("Client ID is required!")
@@ -116,7 +116,7 @@ const updateOrderValidator = [
     .isISO8601()
     .withMessage("Order date must be a valid ISO 8601 date format."),
   
-  body("clientId")
+  body("customerId")
     .optional()
     .isInt()
     .withMessage("Client ID must be an integer."),
