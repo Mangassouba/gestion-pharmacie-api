@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'CAISSIER');
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" SERIAL NOT NULL,
@@ -31,6 +34,7 @@ CREATE TABLE "sales" (
     "id" SERIAL NOT NULL,
     "sale_date" TIMESTAMP(3) NOT NULL,
     "userId" INTEGER,
+    "customerId" INTEGER NOT NULL,
 
     CONSTRAINT "sales_pkey" PRIMARY KEY ("id")
 );
@@ -61,7 +65,7 @@ CREATE TABLE "customers" (
 CREATE TABLE "orders" (
     "id" SERIAL NOT NULL,
     "order_date" TIMESTAMP(3) NOT NULL,
-    "clientId" INTEGER NOT NULL,
+    "customerId" INTEGER NOT NULL,
     "userId" INTEGER,
 
     CONSTRAINT "orders_pkey" PRIMARY KEY ("id")
@@ -146,11 +150,23 @@ CREATE TABLE "stockMovements" (
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "products_barcode_key" ON "products"("barcode");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "customers_phone_key" ON "customers"("phone");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "batches_number_key" ON "batches"("number");
+
 -- AddForeignKey
 ALTER TABLE "products" ADD CONSTRAINT "products_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "sales" ADD CONSTRAINT "sales_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "sales" ADD CONSTRAINT "sales_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "saleDetails" ADD CONSTRAINT "saleDetails_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -159,7 +175,7 @@ ALTER TABLE "saleDetails" ADD CONSTRAINT "saleDetails_productId_fkey" FOREIGN KE
 ALTER TABLE "saleDetails" ADD CONSTRAINT "saleDetails_saleId_fkey" FOREIGN KEY ("saleId") REFERENCES "sales"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "orders" ADD CONSTRAINT "orders_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "customers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "orders" ADD CONSTRAINT "orders_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "orders" ADD CONSTRAINT "orders_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;

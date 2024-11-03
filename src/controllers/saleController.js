@@ -14,7 +14,7 @@ const logStockMovement = async (productId, quantity, type) => {
 };
 
 export const createSale = async (req, res) => {
-    const { sale_date, details } = req.body;
+    const { sale_date, customerId, details } = req.body; 
     const userId = req.user.userId;
 
     try {
@@ -32,6 +32,7 @@ export const createSale = async (req, res) => {
             data: {
                 sale_date,
                 userId,
+                customerId,
                 details: {
                     create: details.map((detail) => ({
                         quantity: detail.quantity,
@@ -91,7 +92,7 @@ export const getSaleById = async (req, res) => {
 
 export const updateSale = async (req, res) => {
     const { id } = req.params;
-    const { sale_date, details } = req.body;
+    const { sale_date, customerId, details } = req.body;
     const userId = req.user.userId; 
 
     try {
@@ -104,7 +105,6 @@ export const updateSale = async (req, res) => {
             return res.status(StatusCodes.NOT_FOUND).json({ error: i18next.t('sale.notFound') });
         }
 
-        
         await Promise.all(
             saleExists.details.map(async (existingDetail) => {
                 const newDetail = details.find(d => d.productId === existingDetail.productId);
@@ -133,6 +133,7 @@ export const updateSale = async (req, res) => {
                 data: {
                     sale_date,
                     userId,
+                    customerId,
                     details: {
                         create: details.map((detail) => ({
                             quantity: detail.quantity,

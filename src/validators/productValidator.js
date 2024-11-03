@@ -1,99 +1,86 @@
 import { check, param, validationResult } from "express-validator";
 import { StatusCodes } from "http-status-codes";
-import prisma from "../config/prisma.js";
+import prisma from "../config/prisma.js"; // Ensure Prisma is correctly imported
+
+// Function to handle validation errors
+const handleValidationErrors = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({ errors: errors.array() });
+  }
+  next();
+};
 
 // Validator for adding a new product
 const addProductValidator = [
   check("name")
-    .not()
-    .isEmpty()
+    .notEmpty()
     .withMessage("Product name is required!")
-    .bail()
     .isLength({ min: 3 })
     .withMessage("Product name must be at least 3 characters long."),
   check("stock")
-    .not()
-    .isEmpty()
+    .notEmpty()
     .withMessage("Stock quantity is required!")
-    .bail()
     .isInt({ min: 0 })
     .withMessage("Stock must be a non-negative integer."),
   check("sale_price")
-    .not()
-    .isEmpty()
+    .notEmpty()
     .withMessage("Sale price is required!")
-    .bail()
     .isFloat({ min: 0 })
     .withMessage("Sale price must be a positive number."),
   check("purchase_price")
-    .not()
-    .isEmpty()
+    .notEmpty()
     .withMessage("Purchase price is required!")
-    .bail()
     .isFloat({ min: 0 })
     .withMessage("Purchase price must be a positive number."),
   check("threshold")
-    .not()
-    .isEmpty()
+    .notEmpty()
     .withMessage("Threshold is required!")
-    .bail()
     .isInt({ min: 0 })
     .withMessage("Threshold must be a non-negative integer."),
   check("prescription_req")
-    .not()
-    .isEmpty()
+    .notEmpty()
     .withMessage("Prescription requirement status is required!")
     .isBoolean()
     .withMessage("Prescription requirement must be a boolean value."),
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res
-        .status(StatusCodes.UNPROCESSABLE_ENTITY)
-        .json({ errors: errors.array() });
-    }
-    next();
-  },
+  check("barcode")
+    .notEmpty()
+    .withMessage("Barcode is required!")
+    .bail()
+    .custom(async (value) => {
+      const product = await prisma.products.findUnique({ where: { barcode: value } });
+      if (product) {
+        throw new Error("Barcode must be unique.");
+      }
+      return true;
+    }),
+  handleValidationErrors,
 ];
 
 // Validator for deleting a product by ID
 const deleteProductValidator = [
   param("id")
-    .not()
-    .isEmpty()
+    .notEmpty()
     .withMessage("Product ID is required!")
     .bail()
     .custom(async (value) => {
-      const product = await prisma.products.findUnique({
-        where: { id: parseInt(value, 10) },
-      });
+      const product = await prisma.products.findUnique({ where: { id: parseInt(value, 10) } });
       if (!product) {
         throw new Error("This product does not exist!");
       }
       return true;
     }),
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res
-        .status(StatusCodes.UNPROCESSABLE_ENTITY)
-        .json({ errors: errors.array() });
-    }
-    next();
-  },
+  handleValidationErrors,
 ];
 
 // Validator for updating a product by ID
 const updateProductValidator = [
   param("id")
-    .not()
-    .isEmpty()
+    .notEmpty()
     .withMessage("Product ID is required!")
     .bail()
     .custom(async (value) => {
-      const product = await prisma.products.findUnique({
-        where: { id: parseInt(value, 10) },
-      });
+      const product = await prisma.products.findUnique({ where: { id: parseInt(value, 10) } });
       if (!product) {
         throw new Error("This product does not exist.");
       }
@@ -123,42 +110,32 @@ const updateProductValidator = [
     .optional()
     .isBoolean()
     .withMessage("Prescription requirement must be a boolean value."),
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res
-        .status(StatusCodes.UNPROCESSABLE_ENTITY)
-        .json({ errors: errors.array() });
-    }
-    next();
-  },
+  check("barcode")
+    .optional()
+    .custom(async (value, { req }) => {
+      const product = await prisma.products.findUnique({ where: { barcode: value } });
+      if (product && product.id !== parseInt(req.params.id, 10)) {
+        throw new Error("Barcode must be unique.");
+      }
+      return true;
+    }),
+  handleValidationErrors,
 ];
 
 // Validator for getting a product by ID
 const getProductByIdValidator = [
   param("id")
-    .not()
-    .isEmpty()
+    .notEmpty()
     .withMessage("Product ID is required!")
     .bail()
     .custom(async (value) => {
-      const product = await prisma.products.findUnique({
-        where: { id: parseInt(value, 10) },
-      });
+      const product = await prisma.products.findUnique({ where: { id: parseInt(value, 10) } });
       if (!product) {
         throw new Error("This product does not exist!");
       }
       return true;
     }),
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res
-        .status(StatusCodes.UNPROCESSABLE_ENTITY)
-        .json({ errors: errors.array() });
-    }
-    next();
-  },
+  handleValidationErrors,
 ];
 
 export {
