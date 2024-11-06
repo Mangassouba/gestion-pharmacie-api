@@ -8,17 +8,17 @@ const createReceptionValidator = [
     .withMessage("Reception date is required")
     .isISO8601()
     .withMessage("Invalid date format"),
-  check("userId")
-    .notEmpty()
-    .withMessage("User ID is required")
-    .isInt()
-    .custom(async (value) => {
-      const user = await prisma.users.findUnique({ where: { id: value } });
-      if (!user) {
-        throw new Error("User does not exist");
-      }
-      return true;
-    }),
+  // check("userId")
+  //   .notEmpty()
+  //   .withMessage("User ID is required")
+  //   .isInt()
+  //   .custom(async (value) => {
+  //     const user = await prisma.users.findUnique({ where: { id: value } });
+  //     if (!user) {
+  //       throw new Error("User does not exist");
+  //     }
+  //     return true;
+  //   }),
   check("details")
     .isArray({ min: 1 })
     .withMessage("Details must be an array with at least one item"),

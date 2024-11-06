@@ -5,7 +5,7 @@ import { authenticateToken,authorizeRole } from '../middlewares/authMiddleware.j
 
 const saleRouter = express.Router();
 
-saleRouter.post("/sale", authenticateToken, addSaleValidator,  createSale);
+saleRouter.post("/sale", authenticateToken,   createSale);
 saleRouter.get("/sale", authenticateToken, getSales);
 saleRouter.get("/sale/:id", authenticateToken, getSaleByIdValidator,  getSaleById);
 saleRouter.put("/sale/:id", authenticateToken, updateSaleValidator, updateSale);
