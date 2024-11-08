@@ -1,6 +1,7 @@
 import prisma from "../config/prisma.js";
 import bcrypt from 'bcryptjs';
 import i18next from '../i18n.js';
+import { resetPassword, sendPasswordResetEmail } from "../services/userService.js";
 
 export const createUser = async (req, res) => {
   const { name, email, password, role, status } = req.body;
@@ -105,3 +106,24 @@ export const deleteUser = async (req, res) => {
     res.status(500).json({ error: i18next.t('user.deletionError') });
   }
 };
+
+
+export const  requestPasswordReset = async(req, res) => {
+  const { email } = req.body;
+  try {
+    const response = await sendPasswordResetEmail(email);
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
+
+export const handleResetPassword = async(req, res) =>{
+  const { token, newPassword } = req.body;
+  try {
+    const response = await resetPassword(token, newPassword);
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
