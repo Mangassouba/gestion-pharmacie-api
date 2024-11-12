@@ -115,3 +115,30 @@ export const deleteProduct = async (req, res) => {
     res.status(500).json({ error: i18next.t('product.deletionError') });
   }
 };
+
+
+export const getProductStatistics = async (req, res) => {
+  try {
+    // Nombre total de produits en stock (stock > 0)
+    const inStockCount = await prisma.products.count({
+      where: {
+        stock: { gt: 0 },
+      },
+    });
+
+    // Nombre de produits en rupture de stock (stock < seuil)
+    const outOfStockCount = await prisma.products.count({
+      where: {
+        stock: { lt: prisma.products.threshold },
+      },
+    });
+
+    res.status(200).json({
+      inStockCount,
+      outOfStockCount,
+    });
+  } catch (error) {
+    console.error("Error retrieving product statistics:", error);
+    res.status(500).json({ error: i18next.t('product.statisticsError') });
+  }
+};

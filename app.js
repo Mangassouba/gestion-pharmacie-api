@@ -12,6 +12,7 @@ import movementRouter from './src/routes/stockMovements.js';
 import iventoryRouter from './src/routes/inventoryRoutes.js';
 import receptionsRouter from './src/routes/receptionRoutes.js';
 import authRouter from './src/routes/authRoutes.js';
+import statistics from './src/routes/statiqueRoutes.js';
 // import prisma from './src/config/prisma';
 
 
@@ -38,6 +39,7 @@ app.use(batcheRrouter)
 app.use(movementRouter)
 app.use(iventoryRouter)
 app.use(receptionsRouter)
+app.use(statistics)
 
 const PORT = process.env.PORT || 3000;
 

@@ -170,3 +170,27 @@ export const deleteSale = async (req, res) => {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: i18next.t('sale.deletionError') });
     }
 };
+
+export const getTodaySales = async (req, res) => {
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+    try {
+        // Compte le nombre de ventes pour la journée
+        const todaySalesCount = await prisma.sales.count({
+            where: {
+                sale_date: {
+                    gte: startOfDay,
+                    lte: endOfDay,
+                },
+            },
+        });
+        res.status(StatusCodes.OK).json({ salesCount: todaySalesCount });
+    } catch (error) {
+        console.log(error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            error: i18next.t('sale.fetchTodayError'),
+        });
+    }
+};
