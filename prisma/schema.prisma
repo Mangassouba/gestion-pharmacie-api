@@ -67,7 +67,7 @@ model saleDetails {
   saleId    Int
   productId Int
   product   products @relation(fields: [productId], references: [id])
-  sale      sales    @relation(fields: [saleId], references: [id])
+  sale      sales    @relation(fields: [saleId], references: [id], onDelete: Cascade)
 }
 
 model customers {
@@ -96,7 +96,7 @@ model orderDetails {
   price     Decimal
   productId Int
   orderId   Int
-  order     orders   @relation(fields: [orderId], references: [id])
+  order     orders   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product   products @relation(fields: [productId], references: [id])
 }
 
@@ -115,7 +115,7 @@ model receptionDetails {
   productId   Int
   receptionId Int
   product     products   @relation(fields: [productId], references: [id])
-  reception   receptions @relation(fields: [receptionId], references: [id])
+  reception   receptions @relation(fields: [receptionId], references: [id], onDelete: Cascade)
 }
 
 model suppliers {

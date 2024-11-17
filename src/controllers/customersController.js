@@ -68,12 +68,23 @@ export const updateClient = async (req, res) => {
 };
 
 export const deleteClient = async (req, res) => {
-  const { id } = req.params;
+ const { id } = req.params;
 
   try {
+    const linkedOrders = await prisma.orders.findMany({
+      where: { customerId: parseInt(id) },
+    });
+
+    if (linkedOrders.length > 0) {
+      return res.status(400).json({
+        message: ('Unable to delete a customer due to a sale or reception'),
+      });
+    }
+
     await prisma.customers.delete({
       where: { id: parseInt(id) },
     });
+
     res.status(200).json({ message: i18next.t('customer.deletionSuccess') });
   } catch (error) {
     console.error(error);
