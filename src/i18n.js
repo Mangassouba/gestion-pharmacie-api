@@ -17,7 +17,11 @@ i18next.init({
             loginError: "Error during login.",
             accessForbidden: "Access forbidden, token missing.",
             userInactive: "User account is inactive.",
-            invalidToken: "Invalid or expired token."
+            invalidToken: "Invalid or expired token.",
+            noRefreshToken: "Aucun refresh token fourni.",
+            invalidRefreshToken: "Refresh token invalide.",
+            refreshTokenExpired: "Le refresh token a expiré.",
+            accessGranted: "Accès autorisé."
             },
         supplier: {
             fetchAllError: "Error while retrieving suppliers.",

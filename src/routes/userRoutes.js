@@ -6,7 +6,7 @@ import { authorizeRole,authenticateToken } from '../middlewares/authMiddleware.j
 const router = express.Router();
 
 // Routes to manage users
-router.post('/user',  addRequestValidator, createUser);
+router.post('/user', authenticateToken, addRequestValidator, createUser);
 router.get('/user', authenticateToken, getAllUsers);
 router.get('/user/:id', authenticateToken, getByIdValidator, getUserById);
 router.put('/user/:id', authenticateToken, updateValidator, updateUser);
