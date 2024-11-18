@@ -1,6 +1,7 @@
 import prisma from "../config/prisma.js";
 import { StatusCodes } from "http-status-codes";
 import i18next from '../i18n.js';
+import sendStockAlert from "../services/emailService.js";
 
 const logStockMovement = async (productId, quantity, type) => {
     await prisma.stockMovements.create({
@@ -26,7 +27,27 @@ export const createSale = async (req, res) => {
             if (!product || product.stock < detail.quantity) {
                 return res.status(StatusCodes.BAD_REQUEST).json({ error: i18next.t('sale.insufficientStock', { productId: detail.productId }) });
             }
-        }
+
+
+            const updatedProduct = await prisma.products.findUnique({
+                where: { id: detail.productId },
+              });
+      
+              if (updatedProduct.stock <= updatedProduct.threshold) {
+                const admins = await prisma.users.findMany({
+                  where: { role: 'ADMIN' },
+                  select: { email: true },
+                });
+      
+                const adminEmails = admins.map((admin) => admin.email);
+                await sendStockAlert(
+                  adminEmails,
+                  updatedProduct.name,
+                  updatedProduct.stock,
+                  updatedProduct.threshold
+                );
+              }
+        }        
 
         const newSale = await prisma.sales.create({
             data: {
