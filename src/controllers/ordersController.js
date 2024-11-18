@@ -56,6 +56,7 @@ export const getOrders = async (req, res) => {
           details: true,
           customer: true,
         },
+        orderBy: { id: 'asc' }
       });
       res.status(200).json(orders);
     } catch (error) {

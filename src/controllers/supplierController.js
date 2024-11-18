@@ -5,7 +5,9 @@ import { StatusCodes } from 'http-status-codes';
 export const getAllSuppliers = async (req, res) => {
   const userId = req.user.userId;
   try {
-    const suppliers = await prisma.suppliers.findMany();
+    const suppliers = await prisma.suppliers.findMany({
+      orderBy: { id: 'asc' }
+    });
     res.status(StatusCodes.OK).json(suppliers);
   } catch (error) {
     console.error(error);

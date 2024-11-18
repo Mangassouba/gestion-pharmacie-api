@@ -53,6 +53,7 @@ export const getReceptions = async (req, res) => {
   try {
     const receptions = await prisma.receptions.findMany({
       include: { details: true, user: true },
+      orderBy: { id: 'asc' }
     });
     res.status(StatusCodes.OK).json(receptions);
   } catch (error) {

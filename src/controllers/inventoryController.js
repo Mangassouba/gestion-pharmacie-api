@@ -55,7 +55,8 @@ console.log(userId);
 export const getInventories = async (req, res) => {
   try {
     const inventories = await prisma.inventories.findMany({
-      include: { product: true }
+      include: { product: true },
+      orderBy: { id: 'asc' }
     });
     res.status(StatusCodes.OK).json(inventories);
   } catch (error) {

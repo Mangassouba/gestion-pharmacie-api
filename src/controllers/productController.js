@@ -29,7 +29,9 @@ export const createProduct = async (req, res) => {
 
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await prisma.products.findMany();
+    const products = await prisma.products.findMany({
+      orderBy: { id: 'asc' }
+    });
     res.status(200).json(products);
   } catch (error) {
     console.error('Error retrieving products:', error);
