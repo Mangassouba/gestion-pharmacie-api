@@ -1,134 +1,183 @@
-import { check, param, validationResult } from 'express-validator';
-import { StatusCodes } from 'http-status-codes';
-import prisma from '../config/prisma.js';
+import { check, param, validationResult } from "express-validator";
+import prisma from "../config/prisma.js";
+import { StatusCodes } from "http-status-codes";
 
-// Function to handle validation errors
-const handleValidationErrors = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res
-      .status(StatusCodes.UNPROCESSABLE_ENTITY)
-      .json({ errors: errors.array() });
-  }
-  next();
-};
-
-// Validator for creating a new client
-const createClientValidator = [
-  check('firstName')
+export const createClientValidator = [
+  check("firstName")
     .notEmpty()
-    .withMessage('First name is required!')
-    .isLength({ min: 2 })
-    .withMessage('First name must be at least 2 characters long.'),
-  check('lastName')
-    .notEmpty()
-    .withMessage('Last name is required!')
-    .isLength({ min: 2 })
-    .withMessage('Last name must be at least 2 characters long.'),
-  check('address')
-    .notEmpty()
-    .withMessage('Address is required!'),
-  check('phone')
-    .notEmpty()
-    .withMessage('Phone is required!')
-    .isMobilePhone()
-    .withMessage('Please provide a valid phone number.')
+    .withMessage("First name is required.")
     .bail()
-    .custom(async (value) => {
-      const client = await prisma.customers.findUnique({
-        where: { phone: value },
+    .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$/)
+    .withMessage("First name contains invalid characters.")
+    .bail()
+    .isLength({ min: 2 })
+    .withMessage("First name must be at least 2 characters long.")
+    .bail(),
+
+  check("lastName")
+    .notEmpty()
+    .withMessage("Last name is required.")
+    .bail()
+    .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$/)
+    .withMessage("Last name contains invalid characters.")
+    .bail()
+    .isLength({ min: 2 })
+    .withMessage("Last name must be at least 2 characters long.")
+    .bail(),
+
+  check("phone")
+    .notEmpty()
+    .withMessage("Phone number is required.")
+    .bail()
+    .matches(/^[0-9]+$/)
+    .withMessage("Phone number contains invalid characters.")
+    .bail()
+    .isLength({ min: 8, max: 15 })
+    .withMessage("Phone number must be between 8 and 15 characters.")
+    .bail()
+    .custom(async value => {
+      const existingCustomer = await prisma.customers.findUnique({
+        where: { phone: value }
       });
-      if (client) {
-        throw new Error('Phone number must be unique.');
+      if (existingCustomer) {
+        throw new Error("This phone number is already in use.");
       }
       return true;
     }),
-  handleValidationErrors,
+
+  check("address")
+    .optional()
+    .isLength({ min: 5 })
+    .withMessage("Address must be at least 5 characters long.")
+    .bail(),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(StatusCodes.UNPROCESSABLE_ENTITY)
+        .json({ errors: errors.array() });
+    }
+    next();
+  }
 ];
 
-// Validator for updating a client by ID
-const updateClientValidator = [
-  param('id')
+export const updateClientValidator = [
+  param("id")
     .notEmpty()
-    .withMessage('ID is required!')
+    .withMessage("ID is required.")
     .bail()
-    .custom(async (value) => {
-      const client = await prisma.customers.findUnique({
-        where: { id: parseInt(value, 10) },
+    .custom(async value => {
+      const customer = await prisma.customers.findUnique({
+        where: { id: parseInt(value) }
       });
-      if (!client) {
-        throw new Error('Client not found!');
+      if (!customer) {
+        throw new Error("Customer does not exist.");
       }
       return true;
     }),
-  check('firstName')
+
+  check("firstName")
     .optional()
     .isLength({ min: 2 })
-    .withMessage('First name must be at least 2 characters long.'),
-  check('lastName')
+    .withMessage("First name must be at least 2 characters long.")
+    .bail()
+    .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$/)
+    .withMessage("First name contains invalid characters.")
+    .bail(),
+
+  check("lastName")
     .optional()
     .isLength({ min: 2 })
-    .withMessage('Last name must be at least 2 characters long.'),
-  check('address')
+    .withMessage("Last name must be at least 2 characters long.")
+    .bail()
+    .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$/)
+    .withMessage("Last name contains invalid characters.")
+    .bail(),
+
+  check("phone")
     .optional()
-    .notEmpty()
-    .withMessage('Address cannot be empty.'),
-  check('phone')
-    .optional()
-    .isMobilePhone()
-    .withMessage('Please provide a valid phone number.')
+    .matches(/^[0-9]+$/)
+    .withMessage("Phone number contains invalid characters.")
+    .bail()
+    .isLength({ min: 8, max: 15 })
+    .withMessage("Phone number must be between 8 and 15 characters.")
     .bail()
     .custom(async (value, { req }) => {
-      const client = await prisma.customers.findUnique({
-        where: { phone: value },
+      const existingCustomer = await prisma.customers.findUnique({
+        where: { phone: value }
       });
-      if (client && client.id !== parseInt(req.params.id, 10)) {
-        throw new Error('Phone number must be unique.');
+      if (existingCustomer && existingCustomer.id !== parseInt(req.params.id)) {
+        throw new Error("This phone number is already in use.");
       }
       return true;
     }),
-  handleValidationErrors,
+
+  check("address")
+    .optional()
+    .isLength({ min: 5 })
+    .withMessage("Address must be at least 5 characters long.")
+    .bail(),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(StatusCodes.UNPROCESSABLE_ENTITY)
+        .json({ errors: errors.array() });
+    }
+    next();
+  }
 ];
 
-// Validator for deleting a client by ID
-const deleteClientValidator = [
-  param('id')
+export const deleteClientValidator = [
+  param("id")
     .notEmpty()
-    .withMessage('ID is required!')
+    .withMessage("ID is required.")
     .bail()
-    .custom(async (value) => {
-      const client = await prisma.customers.findUnique({
-        where: { id: parseInt(value, 10) },
+    .custom(async value => {
+      const customer = await prisma.customers.findUnique({
+        where: { id: parseInt(value) }
       });
-      if (!client) {
-        throw new Error('Client not found!');
+      if (!customer) {
+        throw new Error("Customer does not exist.");
       }
       return true;
     }),
-  handleValidationErrors,
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(StatusCodes.UNPROCESSABLE_ENTITY)
+        .json({ errors: errors.array() });
+    }
+    next();
+  }
 ];
 
-// Validator for getting a client by ID
-const getClientByIdValidator = [
-  param('id')
+export const getClientByIdValidator = [
+  param("id")
     .notEmpty()
-    .withMessage('Client ID is required.')
+    .withMessage("ID is required.")
     .bail()
-    .custom(async (value) => {
-      const client = await prisma.customers.findUnique({
-        where: { id: parseInt(value, 10) },
+    .custom(async value => {
+      const customer = await prisma.customers.findUnique({
+        where: { id: parseInt(value) }
       });
-      if (!client) {
-        throw new Error('Client does not exist.');
+      if (!customer) {
+        throw new Error("Customer does not exist.");
       }
       return true;
     }),
-  handleValidationErrors,
-];
 
-export {
-  createClientValidator,
-  updateClientValidator,
-  deleteClientValidator,
-  getClientByIdValidator,
-};
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(StatusCodes.UNPROCESSABLE_ENTITY)
+        .json({ errors: errors.array() });
+    }
+    next();
+  }
+];
