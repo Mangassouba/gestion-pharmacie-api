@@ -130,13 +130,40 @@ export const deleteInventory = async (req, res) => {
   const { id } = req.params;
 
   try {
-    await prisma.inventories.delete({
-      where: { id: parseInt(id) }
+    const inventory = await prisma.inventories.findUnique({
+      where: { id: Number(id) },
+      include: { details: true },
     });
 
-    res.status(StatusCodes.OK).json({ message: "Inventory deleted successfully" });
+    if (!inventory) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        error: "Inventory not found",
+      });
+    }
+
+    await Promise.all(
+      inventory.details.map(async (detail) => {
+        await prisma.products.update({
+          where: { id: detail.productId },
+          data: { stock: { decrement: detail.quantity } },
+        });
+
+        await logStockMovement(detail.productId, -detail.quantity, 'inventory deletion');
+      })
+    );
+
+    await prisma.inventories.delete({
+      where: { id: Number(id) },
+    });
+
+    res.status(StatusCodes.OK).json({
+      message: "Inventory deleted successfully",
+    });
   } catch (error) {
     console.error(error);
-    res.status(StatusCodes.BAD_REQUEST).json({ error: "Error deleting inventory", details: error.message });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      error: "Error deleting inventory",
+      details: error.message,
+    });
   }
 };

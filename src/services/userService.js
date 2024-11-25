@@ -53,7 +53,7 @@ export async function sendPasswordResetEmail(email) {
   
 
   await transporter.sendMail(mailOptions);
-  return { message: 'Email de réinitialisation envoyé.' };
+  return { message: 'Reset email sent.' };
 }
 export async function resetPassword(token, newPassword) {
   const decoded = jwt.verify(token, JWT_SECRET);
@@ -67,5 +67,5 @@ export async function resetPassword(token, newPassword) {
     data: { password: hashedPassword },
   });
 
-  return { message: 'Mot de passe réinitialisé avec succès.' };
+  return { message: 'Password reset successfully.' };
 }

@@ -30,7 +30,7 @@ export const createProduct = async (req, res) => {
 export const getAllProducts = async (req, res) => {
   try {
     const products = await prisma.products.findMany({
-      orderBy: { id: 'asc' }
+      orderBy: { id: 'desc' }
     });
     res.status(200).json(products);
   } catch (error) {

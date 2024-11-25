@@ -27,7 +27,7 @@ export const createStockMovement = async (req, res) => {
     try {
       const movements = await prisma.stockMovements.findMany({
         include: { product: true, user: true },
-        orderBy: { id: 'asc' }
+        orderBy: { id: 'desc' }
       });
       res.status(StatusCodes.OK).json(movements);
     } catch (error) {

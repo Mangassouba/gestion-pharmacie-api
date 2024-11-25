@@ -1,13 +1,14 @@
 import express from 'express';
 import { getProductStatistics } from "../controllers/productController.js";
-import { getTodaySales } from "../controllers/saleController.js";
+import { getLowStockProducts, getMonthlySales } from "../controllers/saleController.js";
 
-getTodaySales
-getProductStatistics
+// getMonthlySales
+// getProductStatistics
 
 const statistics = express.Router();
 
-statistics.get('/sales/today', getTodaySales),
+statistics.get('/sales/today', getMonthlySales),
 statistics.get('/statistics', getProductStatistics)
+statistics.get('/low-stock',getLowStockProducts)
 
 export default statistics;

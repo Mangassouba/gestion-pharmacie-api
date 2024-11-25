@@ -15,7 +15,7 @@ const logStockMovement = async (productId, quantity, type) => {
 
 export const createReception = async (req, res) => {
     const { reception_date, details } = req.body;
-    const userId = req.user.userId; // Utilise l’ID de l’utilisateur connecté
+    const userId = req.user.userId;
     try {
       const newReception = await prisma.receptions.create({
         data: {
@@ -125,14 +125,40 @@ export const updateReception = async (req, res) => {
   };
   
 
-export const deleteReception = async (req, res) => {
-  const { id } = req.params;
-  try {
-    await prisma.receptions.delete({
-      where: { id: Number(id) },
-    });
-    res.status(StatusCodes.OK).json({ message: i18next.t('reception.deletionSuccess') });
-  } catch (error) {
-    res.status(StatusCodes.BAD_REQUEST).json({ error: i18next.t('reception.deletionError', { message: error.message }) });
-  }
-};
+  export const deleteReception = async (req, res) => {
+    const { id } = req.params;
+  
+    try {
+      const reception = await prisma.receptions.findUnique({
+        where: { id: Number(id) },
+        include: { details: true },
+      });
+  
+      if (!reception) {
+        return res.status(StatusCodes.NOT_FOUND).json({
+          error: i18next.t('reception.notFound'),
+        });
+      }
+      await Promise.all(
+        reception.details.map(async (detail) => {
+          await prisma.products.update({
+            where: { id: detail.productId },
+            data: { stock: { decrement: detail.quantity } },
+          });
+          await logStockMovement(detail.productId, -detail.quantity, 'reception deletion');
+        })
+      );
+      await prisma.receptions.delete({
+        where: { id: Number(id) },
+      });
+  
+      res.status(StatusCodes.OK).json({
+        message: i18next.t('reception.deletionSuccess'),
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        error: i18next.t('reception.deletionError', { message: error.message }),
+      });
+    }
+  };

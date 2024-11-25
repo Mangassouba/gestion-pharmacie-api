@@ -108,30 +108,87 @@ export const deleteBatch = async (req, res) => {
 };
 
 // Fonction pour vérifier les lots proches de la péremption
+// export const checkExpiringBatches = async () => {
+//   const today = new Date();
+//   const oneMonthAhead = new Date();
+//   oneMonthAhead.setMonth(today.getMonth() + 1); // Un mois
+//   const twoMonthsAhead = new Date();
+//   twoMonthsAhead.setMonth(today.getMonth() + 2); // Deux mois
+
+//   try {
+//     const expiringBatches = await prisma.batches.findMany({
+//       where: {
+//         expiration_date: {
+//           gte: today,
+//           lte: twoMonthsAhead, // Lots expirant dans 2 mois
+//         },
+//       },
+//       include: { product: true }, // Inclure les informations sur le produit
+//     });
+
+//     return expiringBatches;
+//   } catch (error) {
+//     console.error("Erreur lors de la vérification des lots expirants", error);
+//     throw error;
+//   }
+// };
+
 export const checkExpiringBatches = async () => {
   const today = new Date();
-  const oneMonthAhead = new Date();
-  oneMonthAhead.setMonth(today.getMonth() + 1); // Un mois
   const twoMonthsAhead = new Date();
-  twoMonthsAhead.setMonth(today.getMonth() + 2); // Deux mois
+  twoMonthsAhead.setMonth(today.getMonth() + 2); // Deux mois à partir d'aujourd'hui
 
   try {
+    // Recherche des lots expirants dans 2 mois
     const expiringBatches = await prisma.batches.findMany({
       where: {
         expiration_date: {
           gte: today,
-          lte: twoMonthsAhead, // Lots expirant dans 2 mois
+          lte: twoMonthsAhead,
         },
       },
-      include: { product: true }, // Inclure les informations sur le produit
+      include: {
+        product: {
+          select: {
+            name: true, // Nom du produit
+          },
+        },
+      },
     });
 
-    return expiringBatches;
+    // Transformer les données pour obtenir le total de produits uniques
+    const products = expiringBatches.map(batch => batch.product.name);
+    const uniqueProductsCount = new Set(products).size; // Compter les produits uniques
+
+    return { 
+      expiringBatches, 
+      totalExpiringProducts: uniqueProductsCount 
+    };
   } catch (error) {
     console.error("Erreur lors de la vérification des lots expirants", error);
     throw error;
   }
 };
+
+export const getExpiringProductsCount = async (req, res) => {
+  try {
+    const { expiringBatches, totalExpiringProducts } = await checkExpiringBatches();
+    res.status(StatusCodes.OK).json({
+      totalExpiringProducts,
+      details: expiringBatches.map(batch => ({
+        productName: batch.product.name,
+        expirationDate: batch.expiration_date,
+        quantity: batch.quantity,
+        batchNumber: batch.number,
+      })),
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
+
+
 
 export const handleBatchExpirationCheck = async (req, res) => {
   try {

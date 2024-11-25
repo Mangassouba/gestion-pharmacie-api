@@ -177,42 +177,110 @@ export const updateSale = async (req, res) => {
 
 export const deleteSale = async (req, res) => {
     const { id } = req.params;
+
     try {
+        // Récupérer les détails de la vente
+        const sale = await prisma.sales.findUnique({
+            where: { id: Number(id) },
+            include: { details: true },
+        });
+
+        if (!sale) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                error: i18next.t('sale.notFound'),
+            });
+        }
+
+        // Restaurer le stock pour chaque produit dans les détails de la vente
+        await Promise.all(
+            sale.details.map(async (detail) => {
+                await prisma.products.update({
+                    where: { id: detail.productId },
+                    data: { stock: { increment: detail.quantity } },
+                });
+
+                // Ajouter un mouvement de stock pour la restauration
+                await logStockMovement(detail.productId, detail.quantity, 'sale deletion');
+            })
+        );
+
+        // Supprimer la vente après la restauration des stocks
         await prisma.sales.delete({
             where: { id: Number(id) },
         });
-        res.status(StatusCodes.OK).json({ message: i18next.t('sale.deletionSuccess') });
+
+        res.status(StatusCodes.OK).json({
+            message: i18next.t('sale.deletionSuccess'),
+        });
     } catch (error) {
         console.log(error);
-        if (error.code === "P2003") {
+        if (error.code === 'P2003') {
             return res.status(StatusCodes.BAD_REQUEST).json({
                 error: i18next.t('sale.deletionErrorReference'),
             });
         }
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: i18next.t('sale.deletionError') });
-    }
-};
-
-export const getTodaySales = async (req, res) => {
-    const today = new Date();
-    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
-    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
-
-    try {
-        // Compte le nombre de ventes pour la journée
-        const todaySalesCount = await prisma.sales.count({
-            where: {
-                sale_date: {
-                    gte: startOfDay,
-                    lte: endOfDay,
-                },
-            },
-        });
-        res.status(StatusCodes.OK).json({ salesCount: todaySalesCount });
-    } catch (error) {
-        console.log(error);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            error: i18next.t('sale.fetchTodayError'),
+            error: i18next.t('sale.deletionError'),
         });
     }
 };
+
+
+export const getMonthlySales = async (req, res) => {
+    try {
+        // Requête SQL brute pour regrouper par mois et année
+        const monthlySales = await prisma.$queryRaw`
+            SELECT 
+                EXTRACT(YEAR FROM sale_date) AS year, 
+                EXTRACT(MONTH FROM sale_date) AS month, 
+                COUNT(*) AS sales_count
+            FROM sales
+            GROUP BY year, month
+            ORDER BY year, month;
+        `;
+
+        // Formater les résultats pour les envoyer
+        const formattedSales = monthlySales.map((sale) => ({
+            year: parseInt(sale.year, 10),
+            month: parseInt(sale.month, 10),
+            salesCount: parseInt(sale.sales_count, 10),
+        }));
+
+        res.status(StatusCodes.OK).json({ monthlySales: formattedSales });
+    } catch (error) {
+        console.error(error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            error: i18next.t('sale.fetchMonthlyError'),
+        });
+    }
+};
+
+export const getLowStockProducts = async (req, res) => {
+    try {
+      const lowStockProducts = await prisma.products.findMany({
+        where: {
+          stock: {
+            lte: prisma.products.fields.threshold, // Stock inférieur ou égal au seuil
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          stock: true,
+          threshold: true,
+        },
+      });
+  
+      const count = lowStockProducts.length;
+  
+      res.status(StatusCodes.OK).json({
+        count,
+        products: lowStockProducts,
+      });
+    } catch (error) {
+      console.error('Error fetching low stock products:', error);
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ error: 'Failed to fetch low stock products' });
+    }
+  };
