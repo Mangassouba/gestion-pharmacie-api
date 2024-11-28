@@ -6,7 +6,7 @@ export const getAllSuppliers = async (req, res) => {
   const userId = req.user.userId;
   try {
     const suppliers = await prisma.suppliers.findMany({
-      orderBy: { id: 'asc' }
+      orderBy: { id: 'desc' }
     });
     res.status(StatusCodes.OK).json(suppliers);
   } catch (error) {
@@ -65,17 +65,30 @@ export const updateSupplier = async (req, res) => {
 };
 
 export const deleteSupplier = async (req, res) => {
-  const userId = req.user.userId;
   const { id } = req.params;
+
   try {
-    const existingSupplier = await prisma.suppliers.findUnique({ where: { id: parseInt(id) } });
-    if (!existingSupplier) {
-      return res.status(StatusCodes.NOT_FOUND).json({ error: i18next.t('supplier.notFound') });
+    const supplierId = parseInt(id);
+
+    // Vérifier si le fournisseur est lié à des réceptions
+    const linkedReceptions = await prisma.receptions.findMany({
+      where: { supplierId },
+    });
+
+    if (linkedReceptions.length > 0) {
+      return res.status(400).json({
+        message: i18next.t('supplier.hasReceptions'), // Fournisseur lié à des réceptions
+      });
     }
-    await prisma.suppliers.delete({ where: { id: parseInt(id) } });
-    res.status(StatusCodes.OK).json({ message: i18next.t('supplier.deletionSuccess') });
+
+    // Supprimer le fournisseur
+    await prisma.suppliers.delete({
+      where: { id: supplierId },
+    });
+
+    res.status(200).json({ message: i18next.t('supplier.deletionSuccess') });
   } catch (error) {
     console.error(error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: i18next.t('supplier.deletionError', { message: error.message }) });
+    res.status(500).json({ error: i18next.t('supplier.deletionError') });
   }
 };

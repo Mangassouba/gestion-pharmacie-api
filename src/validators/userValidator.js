@@ -4,13 +4,18 @@ import prisma from "../config/prisma.js";
 
 const addRequestValidator = [
   check("name")
+  .trim()
     .not()
     .isEmpty()
     .withMessage("Name is required!")
     .bail()
+    .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$/)
+    .withMessage("The product name contains invalid characters.")
+    .bail()
     .isLength({ min: 3 })
     .withMessage("Name must be at least 3 characters long."),
   check("email")
+  .trim()
     .not()
     .isEmpty()
     .withMessage("Email is required!")
@@ -28,6 +33,7 @@ const addRequestValidator = [
       return true;
     }),
   check("password")
+  .trim()
     .not()
     .isEmpty()
     .withMessage("Password is required!")
@@ -93,14 +99,20 @@ const updateValidator = [
       return true;
     }),
   check("name")
+  .trim()
     .optional()
+    .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$/)
+    .withMessage("The product name contains invalid characters.")
+    .bail()
     .isLength({ min: 3 })
     .withMessage("Name must be at least 3 characters long."),
   check("email")
+  .trim()
     .optional()
     .isEmail()
     .withMessage("Please provide a valid email."),
   check("password")
+  .trim()
     .optional()
     .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters long."),

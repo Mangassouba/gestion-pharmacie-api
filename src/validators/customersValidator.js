@@ -4,37 +4,40 @@ import { StatusCodes } from "http-status-codes";
 
 export const createClientValidator = [
   check("firstName")
-    .notEmpty()
-    .withMessage("First name is required.")
-    .bail()
-    .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$/)
-    .withMessage("First name contains invalid characters.")
-    .bail()
-    .isLength({ min: 2 })
-    .withMessage("First name must be at least 2 characters long.")
-    .bail(),
+  .trim() // Supprime les espaces au début et à la fin
+  .notEmpty()
+  .withMessage("First name is required and cannot be only spaces.")
+  .bail()
+  .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$/) // Autorise les lettres, espaces internes et caractères spéciaux comme les apostrophes
+  .withMessage("First name contains invalid characters.")
+  .bail()
+  .isLength({ min: 2 })
+  .withMessage("First name must be at least 2 characters long.")
+  .bail(),
 
-  check("lastName")
-    .notEmpty()
-    .withMessage("Last name is required.")
-    .bail()
-    .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$/)
-    .withMessage("Last name contains invalid characters.")
-    .bail()
-    .isLength({ min: 2 })
-    .withMessage("Last name must be at least 2 characters long.")
-    .bail(),
+check("lastName")
+  .trim()
+  .notEmpty()
+  .withMessage("Last name is required and cannot be only spaces.")
+  .bail()
+  .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$/)
+  .withMessage("Last name contains invalid characters.")
+  .bail()
+  .isLength({ min: 2 })
+  .withMessage("Last name must be at least 2 characters long.")
+  .bail(),
 
-  check("phone")
-    .notEmpty()
-    .withMessage("Phone number is required.")
-    .bail()
-    .matches(/^[0-9]+$/)
-    .withMessage("Phone number contains invalid characters.")
-    .bail()
-    .isLength({ min: 8, max: 15 })
-    .withMessage("Phone number must be between 8 and 15 characters.")
-    .bail()
+check("phone")
+  .trim()
+  .notEmpty()
+  .withMessage("Phone number is required and cannot be only spaces.")
+  .bail()
+  .matches(/^[0-9]+$/)
+  .withMessage("Phone number contains invalid characters.")
+  .bail()
+  .isLength({ min: 8, max: 15 })
+  .withMessage("Phone number must be between 8 and 15 characters.")
+  .bail()
     .custom(async value => {
       const existingCustomer = await prisma.customers.findUnique({
         where: { phone: value }
@@ -46,8 +49,9 @@ export const createClientValidator = [
     }),
 
   check("address")
-    .optional()
-    .isLength({ min: 5 })
+  .trim()
+  .optional() 
+    .isLength({ min: 3 })
     .withMessage("Address must be at least 5 characters long.")
     .bail(),
 
@@ -64,6 +68,7 @@ export const createClientValidator = [
 
 export const updateClientValidator = [
   param("id")
+  .trim()
     .notEmpty()
     .withMessage("ID is required.")
     .bail()
@@ -78,6 +83,7 @@ export const updateClientValidator = [
     }),
 
   check("firstName")
+  .trim()
     .optional()
     .isLength({ min: 2 })
     .withMessage("First name must be at least 2 characters long.")
@@ -87,6 +93,7 @@ export const updateClientValidator = [
     .bail(),
 
   check("lastName")
+  .trim()
     .optional()
     .isLength({ min: 2 })
     .withMessage("Last name must be at least 2 characters long.")
@@ -96,6 +103,7 @@ export const updateClientValidator = [
     .bail(),
 
   check("phone")
+  .trim()
     .optional()
     .matches(/^[0-9]+$/)
     .withMessage("Phone number contains invalid characters.")
@@ -114,8 +122,9 @@ export const updateClientValidator = [
     }),
 
   check("address")
+  .trim()
     .optional()
-    .isLength({ min: 5 })
+    .isLength({ min: 3 })
     .withMessage("Address must be at least 5 characters long.")
     .bail(),
 

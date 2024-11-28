@@ -28,7 +28,7 @@ export const createUser = async (req, res) => {
 export const getAllUsers = async (req, res) => {
   try {
     const users = await prisma.users.findMany({
-      orderBy: { id: 'asc' }
+      orderBy: { id: 'desc' }
     });
     res.status(200).json(users);
   } catch (error) {
@@ -129,3 +129,39 @@ export const handleResetPassword = async(req, res) =>{
     res.status(400).json({ message: error.message });
   }
 }
+
+export const updatePassword = async (req, res) => {
+  const { id } = req.params; // ID de l'utilisateur
+  const { oldPassword, newPassword } = req.body;
+
+  try {
+    // Trouver l'utilisateur dans la base de données
+    const user = await prisma.users.findUnique({
+      where: { id: parseInt(id) },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: i18next.t('user.notFound') });
+    }
+
+    // Vérifier si l'ancien mot de passe est correct
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: i18next.t('user.incorrectOldPassword') });
+    }
+
+    // Hacher le nouveau mot de passe
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    // Mettre à jour le mot de passe dans la base de données
+    await prisma.users.update({
+      where: { id: parseInt(id) },
+      data: { password: hashedNewPassword },
+    });
+
+    res.status(200).json({ message: i18next.t('user.passwordUpdateSuccess') });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: i18next.t('user.passwordUpdateError') });
+  }
+};

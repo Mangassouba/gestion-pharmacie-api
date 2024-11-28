@@ -86,7 +86,7 @@ export const getSales = async (req, res) => {
     try {
         const sales = await prisma.sales.findMany({
             include: { details: true, user: true },
-            orderBy: { id: 'asc' }
+            orderBy: { id: 'desc' }
         });
         res.status(StatusCodes.OK).json(sales);
     } catch (error) {

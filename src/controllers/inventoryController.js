@@ -56,7 +56,7 @@ export const getInventories = async (req, res) => {
   try {
     const inventories = await prisma.inventories.findMany({
       include: { product: true },
-      orderBy: { id: 'asc' }
+      orderBy: { id: 'desc' }
     });
     res.status(StatusCodes.OK).json(inventories);
   } catch (error) {
@@ -130,9 +130,10 @@ export const deleteInventory = async (req, res) => {
   const { id } = req.params;
 
   try {
+    // Récupérer l'inventaire sans inclure un champ `details` inexistant
     const inventory = await prisma.inventories.findUnique({
       where: { id: Number(id) },
-      include: { details: true },
+      include: { product: true }, // Inclut le produit associé
     });
 
     if (!inventory) {
@@ -141,16 +142,14 @@ export const deleteInventory = async (req, res) => {
       });
     }
 
-    await Promise.all(
-      inventory.details.map(async (detail) => {
-        await prisma.products.update({
-          where: { id: detail.productId },
-          data: { stock: { decrement: detail.quantity } },
-        });
+    // Mettre à jour le stock du produit en fonction de l'inventaire supprimé
+    await prisma.products.update({
+      where: { id: inventory.productId },
+      data: { stock: { decrement: inventory.stock } }, // Décrémente le stock
+    });
 
-        await logStockMovement(detail.productId, -detail.quantity, 'inventory deletion');
-      })
-    );
+    // Journaliser le mouvement de stock (fonction définie ailleurs dans le code)
+    await logStockMovement(inventory.productId, -inventory.stock, 'inventory deletion');
 
     await prisma.inventories.delete({
       where: { id: Number(id) },
@@ -167,3 +166,4 @@ export const deleteInventory = async (req, res) => {
     });
   }
 };
+

@@ -14,12 +14,15 @@ const logStockMovement = async (productId, quantity, type) => {
 };
 
 export const createReception = async (req, res) => {
-    const { reception_date, details } = req.body;
+    const { reception_date,supplierId, details } = req.body;
+    console.log("id founisseur",supplierId);
+    
     const userId = req.user.userId;
     try {
       const newReception = await prisma.receptions.create({
         data: {
           reception_date,
+          supplierId,
           userId,
           details: {
             create: details.map((detail) => ({
@@ -53,7 +56,7 @@ export const getReceptions = async (req, res) => {
   try {
     const receptions = await prisma.receptions.findMany({
       include: { details: true, user: true },
-      orderBy: { id: 'asc' }
+      orderBy: { id: 'desc' }
     });
     res.status(StatusCodes.OK).json(receptions);
   } catch (error) {

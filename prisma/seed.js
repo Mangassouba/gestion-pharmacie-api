@@ -40,8 +40,8 @@ async function main() {
 
   const user2 = await prisma.users.create({
     data: {
-      name: "med",
-      email: "med@example.com",
+      name: "Hamahoullah",
+      email: "Hamahoullah@example.com",
       password: await hashPassword("123"),
       role: "CAISSIER",
       status: "INACTIVE",
@@ -51,8 +51,8 @@ async function main() {
   // Step 3: Seed Customers
   const customer1 = await prisma.customers.create({
     data: {
-      firstName: "John",
-      lastName: "Doe",
+      firstName: "Med",
+      lastName: "Bankole",
       address: "123 Main St",
       phone: "1234567890",
     },

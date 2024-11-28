@@ -8,8 +8,9 @@ Cette Api permet de gérer les fonctionnalité CRUD (Create, Read, Update, Delet
 
 Avant de démarrer, assurez_vous d'avoir installé les logiciels suivants :
 
-- Node.js (version 14+)
-- Postgres
+- Node.js (version v20.12.1)
+- Postgres (version 14.x ou supérieur)
+- Postman (pour tester l'API)
 - npm (le gestionnaire de paquets Node.js)
 
 ## Technologies Utilisées
@@ -52,7 +53,23 @@ npm start
 Assurez-vous que vous avez postgreSQL et créez une base de donnée (gestion_stock) et
 dans le projet le fichier .env.example faut le renommé en .env et ajouter vos identifiant pour pouvoir se conncter à la base de donnée
 
-## Génération des données des test Seed
+```
+DATABASE_URL="postgresql://USENAME:PASSWORD@localhost:5432/DATABASE_NAME"
+
+JWT_SECRET= SECRET_AUTHENTIFICATION
+JWT_REFRESH_SECRET= SECRETE
+
+EMAIL_USER = YOUR_EMAIL
+EMAIL_PASS = YOUR_PASSWORD
+```
+
+## Migrations Prisma : 
+
+Déployez les migrations pour initialiser la base de données 
+```
+npx prisma migrate deploy 
+```
+## Génération des données avec le script Seed
 
 Générez des données de test dans la base de données pour les entités.
 
@@ -74,7 +91,7 @@ voici un exemple de collection de postman. vous pouvez importé  la collection s
         "id": 33,
         "name": "Admin",
         "email": "admin@example.com",
-        "password": "$2a$10$eu0ToA2YJJ5VIhGFzx621un5BRRK4cWihGxoTTZzu7wSPq1eD9P2C",
+        "password": "2a$10$eu0ToA2YJJ5VIhGFzx621un5",
         "role": "ADMIN",
         "status": "ACTIVE"
     }
@@ -102,7 +119,7 @@ voici un exemple de collection de postman. vous pouvez importé  la collection s
     "id": 35,
     "name": "Baradji",
     "email": "Baradji@gmail.com",
-    "password": "$2a$10$UFMmQUX7CWlp.Iub6ROCnu60dwe4mCjmPQB8wnqbwU.KSD6bPeP6.",
+    "password": "2a$10$UFMmQUX7CWlp.Iub6ROCnu60dwe4mCjmP.",
     "role": "ADMIN",
     "status": "ACTIVE"
 }

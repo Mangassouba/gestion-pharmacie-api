@@ -32,7 +32,7 @@ export const createBatch = async (req, res) => {
 export const getBatches = async (req, res) => {
   try {
     const batches = await prisma.batches.findMany({
-      orderBy: { id: 'asc' },
+      orderBy: { id: 'desc' },
       include: { product: true },
     });
     res.status(StatusCodes.OK).json(batches);

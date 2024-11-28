@@ -4,7 +4,7 @@ import { StatusCodes } from "http-status-codes";
 
 // Validator for creating or updating a batch
 const batchValidator = [
-  check("number").notEmpty().withMessage("Batch number is required"),
+  check("number").trim().notEmpty().withMessage("Batch number is required"),
   check("quantity")
     .isInt({ min: 0 })
     .withMessage("Quantity must be a non-negative integer"),
@@ -82,7 +82,7 @@ const batchIdValidator = [
   
   // Validator for batch creation or update
   const batchupdateValidator = [
-    check("number").notEmpty().withMessage("Batch number is required"),
+    check("number").trim().notEmpty().withMessage("Batch number is required"),
     check("quantity")
       .isInt({ min: 0 })
       .withMessage("Quantity must be a non-negative integer"),

@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 
 i18next.init({
-  lng: 'fr',
+  lng: 'en',
   fallbackLng: 'en',
   resources: {
     en: {
@@ -30,8 +30,12 @@ i18next.init({
             creationError: "Error while creating supplier.",
             updateError: "Error while updating supplier.",
             deletionSuccess: "Supplier successfully deleted.",
-            deletionError: "Error while deleting supplier."
-            },
+            deletionError: "Error while deleting supplier.",
+
+            hasReceptions: "The supplier is linked to receptions and cannot be deleted.",
+            deletionSuccess: "Supplier deleted successfully.",
+            deletionError: "An error occurred while deleting the supplier."
+                    },
         customer: {
             creationError: "Error while creating the client.",
             fetchAllError: "Error while fetching the clients.",
@@ -39,7 +43,13 @@ i18next.init({
             fetchError: "Error while fetching the client.",
             updateError: "Error while updating the client.",
             deletionSuccess: "Client successfully deleted.",
-            deletionError: "Error while deleting the client."
+            deletionError: "Error while deleting the client.",
+
+            hasOrders: "Unable to delete this customer because they are linked to one or more orders.",
+            hasSales: "Unable to delete this customer because they are linked to one or more sales.",
+            hasReceptions: "Unable to delete this customer because they are linked to one or more receptions.",
+            deletionSuccess: "Customer successfully deleted.",
+            deletionError: "An error occurred while deleting the customer."
         },
     order: {
             customerNotFound: "Customer not found",
@@ -59,7 +69,12 @@ i18next.init({
             fetchError: "Error while retrieving the product.",
             updateError: "Error while updating the product.",
             deletionSuccess: "Product successfully deleted.",
-            deletionError: "Error while deleting the product."
+            deletionError: "Error while deleting the product.",
+
+            hasSales: "Unable to delete this product because it is linked to one or more sales.",
+            hasReceptions: "Unable to delete this product because it is linked to one or more receptions.",
+            deletionSuccess: "Product successfully deleted.",
+            deletionError: "Deletion error has occurred is sold or received"
         },
         reception: {
           fetchError: 'Error while fetching receptions',
@@ -132,7 +147,13 @@ i18next.init({
             fetchError: "Error while fetching the client.",
             updateError: "Error while updating the client.",
             deletionSuccess: "Client successfully deleted.",
-            deletionError: "Error while deleting the client."
+            deletionError: "Error while deleting the client.",
+
+            hasOrders: "Impossible de supprimer ce client car il est lié à une ou plusieurs commandes.",
+            hasSales: "Impossible de supprimer ce client car il est lié à une ou plusieurs ventes.",
+            hasReceptions: "Impossible de supprimer ce client car il est lié à une ou plusieurs réceptions.",
+            deletionSuccess: "Client supprimé avec succès.",
+            deletionError: "Erreur lors de la suppression du client"
         },
         order: {
             customerNotFound: "Client non trouvé",

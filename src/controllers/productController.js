@@ -77,10 +77,10 @@ export const updateProduct = async (req, res) => {
       data: {
         name,
         description,
-        stock,
-        sale_price,
-        purchase_price,
-        threshold,
+        stock: parseInt(stock),
+        sale_price: parseFloat(sale_price),
+        purchase_price: parseFloat(purchase_price),
+        threshold: parseInt(threshold),
         prescription_req,
         barcode,
         userId 
@@ -96,15 +96,28 @@ export const updateProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
   const { id } = req.params;
-  const userId = req.user.userId;
 
   try {
-    const existingProduct = await prisma.products.findUnique({
-      where: { id: parseInt(id) },
+    // Vérifier les relations avec les ventes
+    const linkedSales = await prisma.saleDetails.findMany({
+      where: { productId: parseInt(id) },
     });
 
-    if (!existingProduct) {
-      return res.status(404).json({ error: i18next.t('product.notFound') });
+    if (linkedSales.length > 0) {
+      return res.status(400).json({
+        message: i18next.t('product.hasSales'), // Produit lié à des ventes
+      });
+    }
+
+    // Vérifier les relations avec les réceptions
+    const linkedReceptions = await prisma.receptionDetails.findMany({
+      where: { productId: parseInt(id) },
+    });
+
+    if (linkedReceptions.length > 0) {
+      return res.status(400).json({
+        message: i18next.t('product.hasReceptions'), // Produit lié à des réceptions
+      });
     }
 
     await prisma.products.delete({
@@ -113,7 +126,7 @@ export const deleteProduct = async (req, res) => {
 
     res.status(200).json({ message: i18next.t('product.deletionSuccess') });
   } catch (error) {
-    console.error('Error deleting the product:', error);
+    console.error(error);
     res.status(500).json({ error: i18next.t('product.deletionError') });
   }
 };

@@ -4,19 +4,26 @@ import prisma from '../config/prisma.js';
 
 const createSupplierValidator = [
   check('name')
+  .trim()
     .not()
     .isEmpty()
     .withMessage('Name is required.')
     .isLength({ min: 3 })
-    .withMessage('Name must be at least 3 characters long.'),
+    .withMessage('Name must be at least 3 characters long.')
+    .matches(/^[a-zA-Z\s]+$/)
+    .withMessage('Name must only contain letters and spaces.'),
   check('address')
+  .trim()
     .not()
     .isEmpty()
     .withMessage('Address is required.'),
   check('contact')
+  .trim()
     .not()
     .isEmpty()
-    .withMessage('Contact information is required.'),
+    .withMessage('Contact information is required.')
+    .isNumeric()
+    .withMessage('Contact must only contain numbers.'),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -42,9 +49,19 @@ const updateSupplierValidator = [
       }
       return true;
     }),
-  check('name').optional().isLength({ min: 3 }).withMessage('Name must be at least 3 characters long.'),
-  check('address').optional(),
-  check('contact').optional(),
+  check('name')
+  .trim()
+    .optional()
+    .isLength({ min: 3 })
+    .withMessage('Name must be at least 3 characters long.')
+    .matches(/^[a-zA-Z\s]+$/)
+    .withMessage('Name must only contain letters and spaces.'),
+  check('address').trim().optional(),
+  check('contact')
+  .trim()
+    .optional()
+    .isNumeric()
+    .withMessage('Contact must only contain numbers.'),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
