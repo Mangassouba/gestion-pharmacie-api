@@ -31,7 +31,7 @@ async function main() {
   const user1 = await prisma.users.create({
     data: {
       name: "Admin",
-      email: "admin@example.com",
+      email: "admin@gmail.com",
       password: await hashPassword("123456"), // Replace with a secure password
       role: "ADMIN",
       status: "ACTIVE",
@@ -40,8 +40,8 @@ async function main() {
 
   const user2 = await prisma.users.create({
     data: {
-      name: "Hamahoullah",
-      email: "Hamahoullah@example.com",
+      name: "admin2",
+      email: "admin2@gmail.com",
       password: await hashPassword("123"),
       role: "CAISSIER",
       status: "INACTIVE",
@@ -49,111 +49,111 @@ async function main() {
   });
 
   // Step 3: Seed Customers
-  const customer1 = await prisma.customers.create({
-    data: {
-      firstName: "Med",
-      lastName: "Bankole",
-      address: "123 Main St",
-      phone: "1234567890",
-    },
-  });
+  // const customer1 = await prisma.customers.create({
+  //   data: {
+  //     firstName: "Med",
+  //     lastName: "Bankole",
+  //     address: "123 Main St",
+  //     phone: "1234567890",
+  //   },
+  // });
 
   // Step 4: Seed Products
-  const product1 = await prisma.products.create({
-    data: {
-      name: "Aspirin",
-      description: "Pain relief medication",
-      stock: 100,
-      sale_price: 10,
-      purchase_price: 5,
-      threshold: 10,
-      prescription_req: false,
-      barcode: "123456789",
-    },
-  });
+  // const product1 = await prisma.products.create({
+  //   data: {
+  //     name: "Aspirin",
+  //     description: "Pain relief medication",
+  //     stock: 100,
+  //     sale_price: 10,
+  //     purchase_price: 5,
+  //     threshold: 10,
+  //     prescription_req: false,
+  //     barcode: "123456789",
+  //   },
+  // });
 
   // Step 5: Seed Orders
-  const order1 = await prisma.orders.create({
-    data: {
-      order_date: new Date(),
-      customerId: customer1.id,
-      userId: user1.id,
-      details: {
-        create: [
-          {
-            quantity: 2,
-            price: 10,
-            productId: product1.id,
-          },
-        ],
-      },
-    },
-  });
+  // const order1 = await prisma.orders.create({
+  //   data: {
+  //     order_date: new Date(),
+  //     customerId: customer1.id,
+  //     userId: user1.id,
+  //     details: {
+  //       create: [
+  //         {
+  //           quantity: 2,
+  //           price: 10,
+  //           productId: product1.id,
+  //         },
+  //       ],
+  //     },
+  //   },
+  // });
 
   // Step 6: Seed Sales
-  const sale1 = await prisma.sales.create({
-    data: {
-      sale_date: new Date(),
-      userId: user1.id,
-      customerId: customer1.id,
-      details: {
-        create: [
-          {
-            quantity: 1,
-            price: 10,
-            productId: product1.id,
-          },
-        ],
-      },
-    },
-  });
+  // const sale1 = await prisma.sales.create({
+  //   data: {
+  //     sale_date: new Date(),
+  //     userId: user1.id,
+  //     customerId: customer1.id,
+  //     details: {
+  //       create: [
+  //         {
+  //           quantity: 1,
+  //           price: 10,
+  //           productId: product1.id,
+  //         },
+  //       ],
+  //     },
+  //   },
+  // });
 
   // Step 7: Seed Suppliers
-  const supplier1 = await prisma.suppliers.create({
-    data: {
-      name: "Supplier Inc.",
-      address: "456 Supplier St",
-      contact: "987654321",
-      userId: user2.id,
-    },
-  });
+  // const supplier1 = await prisma.suppliers.create({
+  //   data: {
+  //     name: "Supplier Inc.",
+  //     address: "456 Supplier St",
+  //     contact: "987654321",
+  //     userId: user2.id,
+  //   },
+  // });
 
   // Step 8: Seed Batches
-  const batch1 = await prisma.batches.create({
-    data: {
-      number: "BATCH123",
-      quantity: 50,
-      expiration_date: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
-      productId: product1.id,
-    },
-  });
+  // const batch1 = await prisma.batches.create({
+  //   data: {
+  //     number: "BATCH123",
+  //     quantity: 50,
+  //     expiration_date: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+  //     productId: product1.id,
+  //   },
+  // });
 
   // Step 9: Seed Inventories
-  const inventory1 = await prisma.inventories.create({
-    data: {
-      inventory_date: new Date(),
-      stock: 100,
-      productId: product1.id,
-      userId: user1.id,
-    },
-  });
+  // const inventory1 = await prisma.inventories.create({
+  //   data: {
+  //     inventory_date: new Date(),
+  //     stock: 100,
+  //     productId: product1.id,
+  //     userId: user1.id,
+  //   },
+  // });
 
   // Step 10: Seed Receptions
-  const reception1 = await prisma.receptions.create({
-    data: {
-      reception_date: new Date(),
-      userId: user2.id,
-      details: {
-        create: [
-          {
-            quantity: 20,
-            price: 5,
-            productId: product1.id,
-          },
-        ],
-      },
-    },
-  });
+  // const reception1 = await prisma.receptions.create({
+  //   data: {
+  //     reception_date: new Date(),
+  //     userId: user2.id,
+  //     details: {
+  //       create: [
+  //         {
+  //           quantity: 20,
+  //           price: 5,
+  //           productId: product1.id,
+  //         },
+  //       ],
+  //     },
+  //   },
+  // });
 
   console.log("Seed data added successfully!");
 }
