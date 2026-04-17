@@ -2,7 +2,16 @@ import prisma from "../config/prisma.js";
 import i18next from "../i18n.js";
 
 export const createProduct = async (req, res) => {
-  const { name, description, stock, sale_price, purchase_price, threshold, prescription_req, barcode } = req.body;
+  const {
+    name,
+    description,
+    stock,
+    sale_price,
+    purchase_price,
+    threshold,
+    prescription_req,
+    barcode,
+  } = req.body;
   const userId = req.user.userId;
 
   try {
@@ -10,32 +19,32 @@ export const createProduct = async (req, res) => {
       data: {
         name,
         description,
-        stock,
-        sale_price,
-        purchase_price,
-        threshold,
+        stock: parseInt(stock),
+        sale_price: parseFloat(sale_price),
+        purchase_price: parseFloat(purchase_price),
+        threshold: parseInt(threshold),
         prescription_req,
         barcode,
-        userId 
+        userId: parseInt(userId),
       },
     });
 
     res.status(201).json(newProduct);
   } catch (error) {
     console.error("Error creating product:", error);
-    res.status(500).json({ error: i18next.t('product.creationError') });
+    res.status(500).json({ error: i18next.t("product.creationError") });
   }
 };
 
 export const getAllProducts = async (req, res) => {
   try {
     const products = await prisma.products.findMany({
-      orderBy: { id: 'desc' }
+      orderBy: { id: "desc" },
     });
     res.status(200).json(products);
   } catch (error) {
-    console.error('Error retrieving products:', error);
-    res.status(500).json({ error: i18next.t('product.fetchAllError') });
+    console.error("Error retrieving products:", error);
+    res.status(500).json({ error: i18next.t("product.fetchAllError") });
   }
 };
 
@@ -48,19 +57,28 @@ export const getProductById = async (req, res) => {
     });
 
     if (!product) {
-      return res.status(404).json({ error: i18next.t('product.notFound') });
+      return res.status(404).json({ error: i18next.t("product.notFound") });
     }
 
     res.status(200).json(product);
   } catch (error) {
-    console.error('Error retrieving the product:', error);
-    res.status(500).json({ error: i18next.t('product.fetchError') });
+    console.error("Error retrieving the product:", error);
+    res.status(500).json({ error: i18next.t("product.fetchError") });
   }
 };
 
 export const updateProduct = async (req, res) => {
   const { id } = req.params;
-  const { name, description, stock, sale_price, purchase_price, threshold, prescription_req, barcode } = req.body;
+  const {
+    name,
+    description,
+    stock,
+    sale_price,
+    purchase_price,
+    threshold,
+    prescription_req,
+    barcode,
+  } = req.body;
   const userId = req.user.userId;
 
   try {
@@ -69,7 +87,7 @@ export const updateProduct = async (req, res) => {
     });
 
     if (!existingProduct) {
-      return res.status(404).json({ error: i18next.t('product.notFound') });
+      return res.status(404).json({ error: i18next.t("product.notFound") });
     }
 
     const updatedProduct = await prisma.products.update({
@@ -83,14 +101,14 @@ export const updateProduct = async (req, res) => {
         threshold: parseInt(threshold),
         prescription_req,
         barcode,
-        userId 
+        userId,
       },
     });
 
     res.status(200).json(updatedProduct);
   } catch (error) {
-    console.error('Error updating the product:', error);
-    res.status(500).json({ error: i18next.t('product.updateError') });
+    console.error("Error updating the product:", error);
+    res.status(500).json({ error: i18next.t("product.updateError") });
   }
 };
 
@@ -105,7 +123,7 @@ export const deleteProduct = async (req, res) => {
 
     if (linkedSales.length > 0) {
       return res.status(400).json({
-        message: i18next.t('product.hasSales'), // Produit lié à des ventes
+        message: i18next.t("product.hasSales"), // Produit lié à des ventes
       });
     }
 
@@ -116,7 +134,7 @@ export const deleteProduct = async (req, res) => {
 
     if (linkedReceptions.length > 0) {
       return res.status(400).json({
-        message: i18next.t('product.hasReceptions'), // Produit lié à des réceptions
+        message: i18next.t("product.hasReceptions"), // Produit lié à des réceptions
       });
     }
 
@@ -124,13 +142,12 @@ export const deleteProduct = async (req, res) => {
       where: { id: parseInt(id) },
     });
 
-    res.status(200).json({ message: i18next.t('product.deletionSuccess') });
+    res.status(200).json({ message: i18next.t("product.deletionSuccess") });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: i18next.t('product.deletionError') });
+    res.status(500).json({ error: i18next.t("product.deletionError") });
   }
 };
-
 
 export const getProductStatistics = async (req, res) => {
   try {
@@ -154,6 +171,6 @@ export const getProductStatistics = async (req, res) => {
     });
   } catch (error) {
     console.error("Error retrieving product statistics:", error);
-    res.status(500).json({ error: i18next.t('product.statisticsError') });
+    res.status(500).json({ error: i18next.t("product.statisticsError") });
   }
 };
